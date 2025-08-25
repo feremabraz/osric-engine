@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["es2022"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "types": ["vitest", "node"],
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@tests/*": ["./__tests__/*"],
+      "@engine/*": ["./engine/*"],
+      "@osric-engine/*": ["./osric-engine/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}

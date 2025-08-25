@@ -1,0 +1,29 @@
+import { command, domainFail } from '../../engine';
+import { requireCharacter } from '../shared-rules/characterExist';
+
+export interface AttackRollParams {
+  attackerId: string;
+  targetId: string;
+}
+export interface AttackRollResult {
+  attackerId: string;
+  targetId: string;
+  roll: number;
+}
+
+command<AttackRollParams>('osric:attackRoll')
+  .validate((_acc, p) => {
+    if (!p || typeof p.attackerId !== 'string' || typeof p.targetId !== 'string')
+      return domainFail('INVALID_PARAMS');
+    return {};
+  })
+  .load(requireCharacter<AttackRollParams, 'attackerId'>('attackerId'))
+  .load(requireCharacter<AttackRollParams, 'targetId'>('targetId'))
+  .calc((_acc, p, ctx) => {
+    const rng = (ctx as unknown as { rng: { int: (min: number, max: number) => number } }).rng;
+    const roll = rng.int(1, 20);
+    return { attackerId: p.attackerId, targetId: p.targetId, roll };
+  })
+  .emit(() => {
+    /* no-op emit to finalize descriptor without adding duplicate keys */
+  });
