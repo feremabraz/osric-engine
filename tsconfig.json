@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["es2022"],
+    "lib": ["es2022", "dom"],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -17,10 +17,11 @@
     "baseUrl": ".",
     "paths": {
       "@tests/*": ["./__tests__/*"],
-      "@engine/*": ["./engine/*"],
-      "@osric-engine/*": ["./osric-engine/*"]
+      "@osric/engine": ["./engine/index.ts"],
+      "@osric/osric-engine": ["./osric-engine/index.ts"],
+      "@osric/renderer-underworld": ["./renderer-underworld/index.ts"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],
+  "exclude": ["node_modules", "distributable-underworld/**"]
 }

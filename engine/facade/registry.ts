@@ -1,4 +1,3 @@
-// Global Command Registry.
 import { totalRuleCount } from '../core/command';
 import type { CommandDescriptor } from '../core/command';
 
@@ -15,9 +14,11 @@ class CommandRegistryImpl {
   get(key: string): CommandDescriptor | undefined {
     return this.map.get(key);
   }
+
   list(): readonly CommandDescriptor[] {
     return Array.from(this.map.values());
   }
+
   clear(): void {
     this.map.clear();
   }

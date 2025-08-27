@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import {
   domainFail,
   engineFail,
@@ -6,13 +5,14 @@ import {
   isEngineFailure,
   isSuccess,
   success,
-} from '../../engine/core/result';
+} from '@osric/engine';
 import type {
   CommandOutcome,
   DomainFailureResult,
   EngineFailureResult,
   SuccessResult,
-} from '../../engine/core/result';
+} from '@osric/engine';
+import { describe, expect, it } from 'vitest';
 
 describe('CE-02 Result & Failure Types', () => {
   it('constructs success', () => {
@@ -50,7 +50,7 @@ describe('CE-02 Result & Failure Types', () => {
   it('guards refine types', () => {
     const r: CommandOutcome = success<{ a: number }>({ a: 1 });
     if (isSuccess(r)) {
-      const v = r as SuccessResult<{ a: number }>; // refined assertion
+      const v = r as SuccessResult<{ a: number }>;
       expect(v.data.a).toBe(1);
     }
     const d: CommandOutcome = domainFail('X');

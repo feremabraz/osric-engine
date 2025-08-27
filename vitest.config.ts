@@ -14,8 +14,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@tests': resolve(__dirname, './__tests__'),
-      engine: resolve(__dirname, './engine'),
-      'osric-engine': resolve(__dirname, './osric-engine'),
+      '@osric/engine': resolve(__dirname, './engine/index.ts'),
+      '@osric/osric-engine': resolve(__dirname, './osric-engine/index.ts'),
+      '@osric/renderer-underworld': resolve(__dirname, './renderer-underworld/index.ts'),
     },
   },
 });

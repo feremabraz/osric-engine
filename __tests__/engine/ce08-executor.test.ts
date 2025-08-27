@@ -1,16 +1,19 @@
+import {
+  CommandRegistry,
+  EffectsBuffer,
+  command,
+  createRng,
+  domainFail,
+  runCommand,
+} from '@osric/engine';
 import { describe, expect, it } from 'vitest';
-import { command } from '../../engine/authoring/dsl';
-import { EffectsBuffer } from '../../engine/core/effects';
-import { runCommand } from '../../engine/core/executor';
-import { domainFail } from '../../engine/core/result';
-import { createRng } from '../../engine/core/rng';
-import { CommandRegistry } from '../../engine/facade/registry';
 
 interface ExecCtx {
   rng: ReturnType<typeof createRng>;
   effects: EffectsBuffer;
   [k: string]: unknown;
 }
+
 function ctx(): ExecCtx {
   return { rng: createRng(1), effects: new EffectsBuffer() };
 }
@@ -24,7 +27,7 @@ describe('CE-08 Executor', () => {
       .emit((_acc, _p, c) => {
         c.effects.add('E', 'T');
         return {};
-      }); // returns descriptor
+      });
     const result = runCommand(d, {}, ctx());
     expect(result.ok).toBe(true);
     if (result.ok) {

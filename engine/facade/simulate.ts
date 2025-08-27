@@ -1,9 +1,3 @@
-// Simulation & Diff logic.
-// Provides diffing utilities over plain store snapshots.
-// Snapshots are assumed to be JSON-like plain objects.
-// Diff algorithm focuses on arrays of objects containing an `id` field (string | number).
-// We classify created, deleted and mutated.
-
 interface Identifiable {
   id: string | number;
 }
@@ -23,7 +17,6 @@ export function diffSnapshots(before: unknown, after: unknown): SimulationDiff {
   for (const key of collections) {
     const a = beforeObj[key];
     const b = afterObj[key];
-    // Only arrays of plain objects with are considered
     if (!Array.isArray(a) && !Array.isArray(b)) continue;
     const beforeArr = Array.isArray(a) ? a : [];
     const afterArr = Array.isArray(b) ? b : [];
@@ -31,13 +24,10 @@ export function diffSnapshots(before: unknown, after: unknown): SimulationDiff {
     for (const item of beforeArr) if (isIdentifiable(item)) beforeMap.set(item.id, item);
     const afterMap = new Map<string | number, unknown>();
     for (const item of afterArr) if (isIdentifiable(item)) afterMap.set(item.id, item);
-    // Created
     for (const id of afterMap.keys())
       if (!beforeMap.has(id)) diff.created.push({ collection: key, id });
-    // Deleted
     for (const id of beforeMap.keys())
       if (!afterMap.has(id)) diff.deleted.push({ collection: key, id });
-    // Mutated
     for (const id of afterMap.keys()) {
       if (beforeMap.has(id)) {
         const beforeJson = stableShallow(beforeMap.get(id) as object);

@@ -1,4 +1,4 @@
-import { command, domainFail } from '../../engine';
+import { command, domainFail } from '@osric/engine';
 import type { DomainMemoryStore } from '../memoryStore';
 import type { Character } from '../memoryStore';
 
@@ -6,6 +6,7 @@ export interface CreateCharacterParams {
   id: string;
   name: string;
 }
+
 export interface CreateCharacterResult {
   id: string;
   name: string;

@@ -1,0 +1,21 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node"],
+    "lib": ["es2022", "dom"],
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@osric/renderer-underworld": ["../renderer-underworld/index.ts"],
+      "@osric/osric-engine": ["../osric-engine/index.ts"],
+      "@osric/engine": ["../engine/index.ts"]
+    }
+  },
+  "include": [
+    "./src",
+    "../renderer-underworld/**/*.ts",
+    "../renderer-underworld/**/*.ts",
+    "../engine/**/*.ts"
+  ]
+}

@@ -1,6 +1,5 @@
+import { combineHash, deepFreeze, hashHex, hashValue } from '@osric/engine';
 import { describe, expect, it } from 'vitest';
-import { deepFreeze } from '../../engine/core/freeze';
-import { combineHash, hashHex, hashValue } from '../../engine/core/hash';
 
 describe('CE-01 hash utilities', () => {
   it('stable for primitive values', () => {
@@ -39,8 +38,6 @@ describe('CE-01 deepFreeze', () => {
       f.x = 1;
     }).toThrow();
     expect(Object.isFrozen(f)).toBe(true);
-    // Attempt mutation (will silently fail in non-strict mode, but object remains frozen)
-    // @ts-ignore - expected to throw in strict mode when attempting mutation
     expect(() => {
       (f.a as unknown as { b: number }).b = 2;
     }).toThrow();

@@ -1,4 +1,4 @@
-import { command, domainFail, success } from '../../engine';
+import { command, domainFail, success } from '@osric/engine';
 import type { DomainMemoryStore } from '../memoryStore';
 import { requireCharacter } from '../shared-rules/characterExist';
 

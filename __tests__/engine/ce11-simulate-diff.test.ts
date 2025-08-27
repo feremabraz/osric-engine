@@ -1,18 +1,10 @@
-// CE-11 simulation diff tests
+import { CommandRegistry, Engine, MemoryStore, command } from '@osric/engine';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { command } from '../../engine/authoring/dsl';
-import { MemoryStore } from '../../engine/core/types';
-import { Engine } from '../../engine/facade/engine';
-import { CommandRegistry } from '../../engine/facade/registry';
 
 interface Entity {
   id: string;
   value: number;
 }
-
-// Command that mutates three collections semantics (simulated by directly modifying store via mutate stage)
-// Since we don't yet thread the store into rule ctx, we'll emulate by returning fragments representing changes.
-// For diffing demonstration we simulate store arrays existing externally; diff logic only inspects store snapshot.
 
 function registerSimCommands() {
   command('sim:create')
@@ -45,7 +37,6 @@ describe('CE-11 simulate diff', () => {
   });
 
   it('classifies created, mutated, deleted', () => {
-    // Initial store state
     const store = new MemoryStore({
       entities: [{ id: 'a', value: 1 }],
     });
@@ -61,12 +52,10 @@ describe('CE-11 simulate diff', () => {
   it('does not persist changes or RNG advancement after simulate', () => {
     const store = new MemoryStore({ entities: [] as Entity[] });
     const engine = new Engine({ seed: 7, store });
-    // @ts-expect-error accessing private for test
-    const firstState = engine.rng.getState().s;
+    const firstState = engine.getRngState().s;
     const sim = engine.simulate('sim:create', {});
-    expect(sim.result.ok).toBe(true); // command exists
-    // @ts-expect-error accessing private for test
-    const afterState = engine.rng.getState().s;
-    expect(afterState).toBe(firstState); // RNG rolled back
+    expect(sim.result.ok).toBe(true);
+    const afterState = engine.getRngState().s;
+    expect(afterState).toBe(firstState);
   });
 });

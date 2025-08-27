@@ -1,5 +1,5 @@
+import { EffectsBuffer } from '@osric/engine';
 import { describe, expect, it } from 'vitest';
-import { EffectsBuffer } from '../../engine/core/effects';
 
 describe('CE-04 EffectsBuffer', () => {
   it('preserves insertion order', () => {
@@ -17,7 +17,6 @@ describe('CE-04 EffectsBuffer', () => {
     expect(buf.size()).toBe(0);
     expect(buf.isEmpty()).toBe(true);
     expect(Object.isFrozen(snap)).toBe(true);
-    // Attempt to mutate via casting through unknown to mutable; should throw
     expect(() => {
       (snap as unknown as unknown[]).push({});
     }).toThrow();

@@ -1,5 +1,5 @@
+import { createRng } from '@osric/engine';
 import { describe, expect, it } from 'vitest';
-import { RNG, createRng } from '../../engine/core/rng';
 
 describe('CE-03 RNG', () => {
   it('identical seed produces identical sequence', () => {
@@ -10,7 +10,7 @@ describe('CE-03 RNG', () => {
     expect(seqA).toEqual(seqB);
   });
   it('state restore resumes sequence', () => {
-    const r = new RNG(42);
+    const r = createRng(42);
     const first = r.float();
     const state = r.getState();
     const nextVals = [r.float(), r.float()];
@@ -22,8 +22,8 @@ describe('CE-03 RNG', () => {
     expect(first).not.toBe(resumed1);
   });
   it('int range inclusive and deterministic', () => {
-    const r1 = new RNG(999);
-    const r2 = new RNG(999);
+    const r1 = createRng(999);
+    const r2 = createRng(999);
     const ints1 = Array.from({ length: 10 }, () => r1.int(1, 6));
     const ints2 = Array.from({ length: 10 }, () => r2.int(1, 6));
     expect(ints1).toEqual(ints2);

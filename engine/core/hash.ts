@@ -1,4 +1,3 @@
-// 64-bit FNV-1a constants (BigInt)
 const FNV_OFFSET_64 = 0xcbf29ce484222325n;
 const FNV_PRIME_64 = 0x100000001b3n;
 
@@ -25,7 +24,7 @@ function* utf8(str: string): Generator<number> {
       yield 0x80 | ((cp >> 6) & 0x3f);
       yield 0x80 | (cp & 0x3f);
     }
-    i += cp > 0xffff ? 2 : 1; // advance surrogate pair correctly
+    i += cp > 0xffff ? 2 : 1;
   }
 }
 

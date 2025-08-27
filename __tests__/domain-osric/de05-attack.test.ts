@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { DomainEngine } from '../../osric-engine/engine';
-import { DomainMemoryStore } from '../../osric-engine/memoryStore';
-import '../../osric-engine/commands/createCharacter';
-import '../../osric-engine/commands/attackRoll';
+import { DomainEngine, DomainMemoryStore } from '@osric/osric-engine';
 
-// DE-05 attackRoll RNG determinism
-
-describe('DE-05 attackRoll', () => {
+describe('DE-05 attack', () => {
   function setup(seed?: number) {
     const store = new DomainMemoryStore();
     const engine = new DomainEngine({ store, seed });
@@ -17,8 +12,8 @@ describe('DE-05 attackRoll', () => {
 
   it('deterministic roll with fixed seed', () => {
     const { engine } = setup(42);
-    const r1 = engine.execute('osric:attackRoll', { attackerId: 'a', targetId: 't' });
-    const r2 = engine.execute('osric:attackRoll', { attackerId: 'a', targetId: 't' });
+    const r1 = engine.execute('osric:attack', { attackerId: 'a', targetId: 't' });
+    const r2 = engine.execute('osric:attack', { attackerId: 'a', targetId: 't' });
     expect(r1.ok).toBe(true);
     expect(r2.ok).toBe(true);
     if (r1.ok && r2.ok) {
@@ -27,9 +22,8 @@ describe('DE-05 attackRoll', () => {
       expect(typeof d1.roll).toBe('number');
       expect(typeof d2.roll).toBe('number');
     }
-    // Recreate engine with same seed -> first roll should match original first roll
     const { engine: engine2 } = setup(42);
-    const r1b = engine2.execute('osric:attackRoll', { attackerId: 'a', targetId: 't' });
+    const r1b = engine2.execute('osric:attack', { attackerId: 'a', targetId: 't' });
     if (r1.ok && r1b.ok) {
       const d1 = r1.data as { roll: number };
       const d1b = r1b.data as { roll: number };
@@ -41,7 +35,7 @@ describe('DE-05 attackRoll', () => {
     const store = new DomainMemoryStore();
     const engine = new DomainEngine({ store, seed: 1 });
     engine.execute('osric:createCharacter', { id: 't', name: 'Target' });
-    const r = engine.execute('osric:attackRoll', { attackerId: 'a', targetId: 't' });
+    const r = engine.execute('osric:attack', { attackerId: 'a', targetId: 't' });
     expect(r.ok).toBe(false);
   });
 });

@@ -1,6 +1,3 @@
-// Engine Facade.
-// Provides high-level execute / simulate / batch APIs. Simulation + batch semantics.
-
 import { processBatch } from '../core/batch';
 import { EffectsBuffer } from '../core/effects';
 import { runCommand } from '../core/executor';
@@ -36,6 +33,10 @@ export class Engine {
     this.store = cfg.store;
   }
 
+  public getRngState() {
+    return this.rng.getState();
+  }
+
   execute(key: string, params: unknown): CommandOutcome {
     const descriptor = CommandRegistry.get(key);
     if (!descriptor) return engineFail('UNKNOWN_COMMAND', `unknown command: ${key}`);
@@ -57,7 +58,6 @@ export class Engine {
     const effects = new EffectsBuffer();
     const result = runCommand(descriptor, params, { rng: this.rng, effects, store: this.store });
     const afterStore = this.store.snapshot();
-    // rollback store and RNG (simulation must not persist)
     this.store.restore(beforeStore);
     this.rng.setState(rngState);
     const diff = diffSnapshots(beforeStore, afterStore);

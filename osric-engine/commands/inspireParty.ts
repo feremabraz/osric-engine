@@ -1,4 +1,4 @@
-import { command, domainFail } from '../../engine';
+import { command, domainFail } from '@osric/engine';
 import type { DomainMemoryStore } from '../memoryStore';
 import type { Character } from '../memoryStore';
 import { requireCharacter } from '../shared-rules/characterExist';
@@ -8,6 +8,7 @@ export interface InspirePartyParams {
   bonus: number;
   message?: string;
 }
+
 export interface InspirePartyResult {
   affected: number;
   leaderId: string;
@@ -24,7 +25,6 @@ command<InspirePartyParams>('osric:inspireParty')
   .load(requireCharacter<InspirePartyParams, 'leaderId'>('leaderId'))
   .mutate((_acc, p, ctx) => {
     const store = (ctx as unknown as { store: DomainMemoryStore }).store;
-    // leader existence guaranteed by load stage; mutate all characters
     const chars = store.getState().characters as Character[];
     for (const c of chars) {
       (c as unknown as { moraleBonus?: number }).moraleBonus =

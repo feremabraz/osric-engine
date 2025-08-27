@@ -1,5 +1,5 @@
+import { computeHash, verifyHash } from '@osric/engine';
 import { describe, expect, it } from 'vitest';
-import { computeHash, verifyHash } from '../../engine/core/integrity';
 
 describe('CE-07 Integrity Hash', () => {
   it('stable across key insertion order', () => {

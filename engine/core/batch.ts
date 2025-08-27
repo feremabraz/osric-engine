@@ -1,6 +1,3 @@
-// Batch processing. Both atomic and non-atomic.
-// Helper used by Engine facade. Uses store snapshot and RNG state for atomic rollback.
-
 import type { CommandDescriptor } from './command';
 import { EffectsBuffer } from './effects';
 import { runCommand } from './executor';

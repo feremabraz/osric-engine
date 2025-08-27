@@ -1,10 +1,5 @@
+import { DomainEngine, DomainMemoryStore, createCharacter } from '@osric/osric-engine';
 import { describe, expect, it } from 'vitest';
-import { DomainEngine } from '../../osric-engine/engine';
-import { DomainMemoryStore } from '../../osric-engine/memoryStore';
-import '../../osric-engine/commands/grantXp'; // ensure command registration
-import { createCharacter } from '../../osric-engine/domain/entities/character';
-
-// DE-02 tests: wrapper & single command (grantXp)
 
 describe('DE-02 grantXp command', () => {
   it('increments xp deterministically with seed', () => {
@@ -15,12 +10,12 @@ describe('DE-02 grantXp command', () => {
     expect(r1.ok).toBe(true);
     const after = store.getCharacter('c1');
     expect(after?.xp).toBe(25);
-    // simulate should not persist
+
     const sim = engine.simulateGrantXp('c1', 10);
     expect(sim.result.ok).toBe(true);
     const afterSim = store.getCharacter('c1');
-    expect(afterSim?.xp).toBe(25); // unchanged
-    // simulate diff should show mutation to xp
+    expect(afterSim?.xp).toBe(25);
+
     const mutated = sim.diff.mutated.find((m) => m.id === 'c1');
     expect(mutated).toBeDefined();
   });

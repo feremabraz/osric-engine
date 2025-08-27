@@ -1,8 +1,3 @@
-// Executor.
-// runCommand executes a command descriptor through its staged rule functions.
-// Features: duplicate key detection, deep freeze after each merge, integrity hash checks,
-// domain failure short-circuit (discarding effects), exception mapping, RNG initial advance.
-
 import type { CommandDescriptor, RuleFn } from './command';
 import type { EffectsBuffer } from './effects';
 import { deepFreeze } from './freeze';
@@ -19,7 +14,7 @@ import type { RNG } from './rng';
 export interface ExecutionContext {
   rng: RNG;
   effects: EffectsBuffer;
-  [k: string]: unknown; // room for future fields
+  [k: string]: unknown;
 }
 
 interface InternalState {
@@ -49,28 +44,24 @@ function executeStageRules(
   ctx: ExecutionContext
 ): CommandOutcome | null {
   for (const rule of rules) {
-    const preHash = state.hash; // hash before rule (integrity check)
+    const preHash = state.hash;
     let result: unknown;
     try {
       result = rule(state.acc, params, ctx);
     } catch (err) {
-      // Differentiate integrity mutation vs generic rule exception
       if (err instanceof TypeError && /read only|frozen|extensible/i.test(String(err.message))) {
         return engineFail('INTEGRITY_MUTATION', 'attempted mutation of frozen accumulator');
       }
       return engineFail('RULE_EXCEPTION', (err as Error).message);
     }
-    // Accumulator must remain unchanged unless rule returns fragment / failure outcome
     if (computeHash(state.acc) !== preHash) {
       return engineFail('INTEGRITY_MUTATION', 'accumulator mutated without fragment');
     }
     if (result && typeof result === 'object') {
-      // Domain or engine failure passthrough (narrow via discriminants)
       if ('ok' in result && (result as { ok: boolean }).ok === false) {
         const r = result as CommandOutcome;
         if (r.type === 'domain-failure' || r.type === 'engine-failure') return r;
       }
-      // Treat plain object as fragment
       const fragment = result as Record<string, unknown>;
       const failure = applyFragment(state, fragment);
       if (failure) return failure;
@@ -84,7 +75,6 @@ export function runCommand(
   rawParams: unknown,
   ctx: ExecutionContext
 ): CommandOutcome {
-  // Initial RNG advance for deterministic divergence
   ctx.rng.float();
   const state: InternalState = {
     acc: deepFreeze({}) as Record<string, unknown>,
@@ -97,13 +87,11 @@ export function runCommand(
     'mutate',
     'emit',
   ];
-
   for (const stageName of stagesOrder) {
     const rules = descriptor.stages[stageName];
     if (!rules.length) continue;
     const outcome = executeStageRules(state, rules, rawParams, ctx);
     if (outcome) {
-      // Domain failure should discard any collected effects per spec
       if (!outcome.ok && outcome.type === 'domain-failure') {
         ctx.effects.drain(); // drop effects
         return domainFail(outcome.code, outcome.message);
@@ -111,7 +99,6 @@ export function runCommand(
       return outcome;
     }
   }
-
   const effects = ctx.effects.drain();
   return success<Record<string, unknown>>(state.acc, Array.from(effects));
 }

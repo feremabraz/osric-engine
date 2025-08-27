@@ -1,13 +1,15 @@
-// CE-13 Public API snapshot
+import * as api from '@osric/engine';
 import { describe, expect, it } from 'vitest';
-import * as api from '../../engine/index';
 
 describe('CE-13 public API snapshot', () => {
   it('exports expected keys', () => {
     const keys = Object.keys(api).sort();
     expect(keys).toEqual([
+      'CommandRegistry',
+      'EffectsBuffer',
       'Engine',
       'MemoryStore',
+      'combineHash',
       'command',
       'computeHash',
       'createRng',
@@ -15,7 +17,14 @@ describe('CE-13 public API snapshot', () => {
       'diffSnapshots',
       'domainFail',
       'engineFail',
+      'hashHex',
+      'hashValue',
+      'isDomainFailure',
+      'isEngineFailure',
+      'isSuccess',
+      'makeCommandDescriptor',
       'processBatch',
+      'runCommand',
       'success',
       'verifyHash',
     ]);

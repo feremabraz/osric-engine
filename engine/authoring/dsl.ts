@@ -1,7 +1,3 @@
-// command(key, paramsSchema?) -> chainable stage methods: validate, load, calc, mutate, emit.
-// Auto-registers descriptor on first stage method call. Returns chain builder (no explicit build function).
-// A snapshot of descriptor can be obtained via builder.descriptor().
-
 import { makeCommandDescriptor } from '../core/command';
 import type { CommandDescriptor, RuleFn } from '../core/command';
 import { CommandRegistry } from '../facade/registry';
@@ -12,7 +8,7 @@ export interface CommandBuilder<Params = unknown, Acc = unknown, Ctx = unknown> 
   calc(fn: RuleFn<Params, Acc, Ctx, unknown>): CommandBuilder<Params, Acc, Ctx>;
   mutate(fn: RuleFn<Params, Acc, Ctx, unknown>): CommandBuilder<Params, Acc, Ctx>;
   emit(fn: RuleFn<Params, Acc, Ctx, unknown>): CommandDescriptor;
-  descriptor(): CommandDescriptor; // frozen snapshot
+  descriptor(): CommandDescriptor;
 }
 
 export function command<Params = unknown, Acc = unknown, Ctx = unknown>(
@@ -32,7 +28,6 @@ export function command<Params = unknown, Acc = unknown, Ctx = unknown>(
   let liveDescriptor: CommandDescriptor | null = null;
   function ensureRegistered() {
     if (!registered) {
-      // Create a live descriptor whose stage arrays are the mutable arrays.
       const liveStages = stages as unknown as CommandDescriptor['stages'];
       liveDescriptor = { key, stages: liveStages };
       CommandRegistry.register(liveDescriptor);
@@ -41,7 +36,7 @@ export function command<Params = unknown, Acc = unknown, Ctx = unknown>(
   }
 
   function snapshot(): CommandDescriptor {
-    return makeCommandDescriptor(key, stages); // fresh frozen copy
+    return makeCommandDescriptor(key, stages);
   }
 
   const builder: CommandBuilder<Params, Acc, Ctx> = {

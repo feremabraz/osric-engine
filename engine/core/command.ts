@@ -1,6 +1,3 @@
-// Command Descriptor.
-// Minimal descriptor structure; populated via DSL. Used directly in tests.
-
 export type RuleFn<Params = unknown, Acc = unknown, Ctx = unknown, R = unknown> = (
   acc: Acc,
   params: Params,

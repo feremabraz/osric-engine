@@ -1,9 +1,5 @@
-// CE-12 batch atomic & non-atomic tests
+import { CommandRegistry, Engine, MemoryStore, command } from '@osric/engine';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { command } from '../../engine/authoring/dsl';
-import { MemoryStore } from '../../engine/core/types';
-import { Engine } from '../../engine/facade/engine';
-import { CommandRegistry } from '../../engine/facade/registry';
 
 interface Item {
   id: string;
@@ -40,8 +36,7 @@ describe('CE-12 batch', () => {
     const store = new MemoryStore({ items: [] as Item[] });
     const engine = new Engine({ seed: 10, store });
     const preStoreSnap = store.snapshot();
-    // @ts-expect-error accessing private rng for deterministic assertion
-    const preRng = engine.rng.getState().s;
+    const preRng = engine.getRngState().s;
     const res = engine.batch(
       [
         { key: 'ok1', params: {} },
@@ -51,11 +46,10 @@ describe('CE-12 batch', () => {
       { atomic: true }
     );
     expect(res.ok).toBe(false);
-    expect(res.effects.length).toBe(0); // rolled back
-    expect((store.getState().items as Item[]).length).toBe(0); // store rollback
-    // @ts-expect-error accessing private rng for deterministic assertion
-    const postRng = engine.rng.getState().s;
-    expect(postRng).toBe(preRng); // RNG rolled back
+    expect(res.effects.length).toBe(0);
+    expect((store.getState().items as Item[]).length).toBe(0);
+    const postRng = engine.getRngState().s;
+    expect(postRng).toBe(preRng);
     expect(store.snapshot()).toEqual(preStoreSnap);
   });
 
@@ -70,9 +64,9 @@ describe('CE-12 batch', () => {
       ],
       { atomic: false }
     );
-    expect(res.ok).toBe(true); // partial success qualifies
+    expect(res.ok).toBe(true);
     const failed = res.failed || [];
     expect(failed.length).toBe(1);
-    expect((store.getState().items as Item[]).length).toBe(2); // successes persisted
+    expect((store.getState().items as Item[]).length).toBe(2);
   });
 });

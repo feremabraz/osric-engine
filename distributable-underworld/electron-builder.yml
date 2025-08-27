@@ -1,0 +1,16 @@
+appId: com.osric.underworld
+productName: Underworld Osric
+files:
+  - dist/**
+asar: true
+directories:
+  output: release
+linux:
+  target:
+    - AppImage
+  artifactName: underworld-osric-${version}.AppImage
+win:
+  target:
+    - nsis
+  artifactName: Underworld-Osric-${version}.exe
+publish: null

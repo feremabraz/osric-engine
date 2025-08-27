@@ -4,7 +4,6 @@ export type DeepReadonly<T> = T extends (...args: unknown[]) => unknown
     ? { readonly [K in keyof T]: DeepReadonly<T[K]> }
     : T;
 
-/** Deeply freezes an object graph (plain objects & arrays). */
 export function deepFreeze<T>(value: T): DeepReadonly<T> {
   if (value === null) return value as DeepReadonly<T>;
   if (typeof value !== 'object') return value as DeepReadonly<T>;

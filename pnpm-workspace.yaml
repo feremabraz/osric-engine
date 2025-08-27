@@ -1,3 +1,6 @@
 packages:
   - engine
   - osric-engine
+  - renderer-underworld
+  - distributable-underworld
+  - viewer-underworld

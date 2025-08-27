@@ -4,7 +4,7 @@ Domain commands mirror engine DSL usage but operate on concrete entities.
 
 ## Pattern
 ```
-import { command } from '../engine';
+import { command } from '@osric/engine';
 
 export interface FooParams { /* ... */ }
 export interface FooResult { /* ... */ }

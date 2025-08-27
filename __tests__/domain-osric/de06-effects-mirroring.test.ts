@@ -1,16 +1,7 @@
+import { command } from '@osric/engine';
+import { DomainEngine, DomainMemoryStore } from '@osric/osric-engine';
 import { describe, expect, it } from 'vitest';
-import { DomainEngine } from '../../osric-engine/engine';
-import { DomainMemoryStore } from '../../osric-engine/memoryStore';
-import '../../osric-engine/commands/createCharacter';
-import '../../osric-engine/commands/startBattle';
 
-// We'll simulate a command producing battle: effects by manually crafting a success output via startBattle then mimicking effect injection.
-
-// Patch store to inject a fake battle effect after startBattle by monkey patching command (simpler than redefining command logic for demo)
-import { CommandRegistry } from '../../engine/facade/registry';
-
-// Add a lightweight command that emits a battle effect
-import { command } from '../../engine';
 command('osric:emitBattleEffect')
   .mutate((_a, _p, ctx) => {
     (ctx as { effects: { add: (t: string, tar: string, p?: unknown) => void } }).effects.add(
@@ -44,16 +35,14 @@ describe('DE-06 effects mirroring', () => {
     engine.execute('osric:createCharacter', { id: 'c1', name: 'A' });
     engine.execute('osric:createCharacter', { id: 'c2', name: 'B' });
     engine.execute('osric:startBattle', { id: 'b1', participantIds: ['c1', 'c2'] });
-
     const batch = engine.batch(
       [
         { key: 'osric:emitBattleEffect', params: {} },
-        { key: 'osric:emitBattleEffect', params: {} }, // same effect second time
+        { key: 'osric:emitBattleEffect', params: {} },
       ],
       { atomic: false }
     );
-
     const mirroredCount = batch.effects.filter((e) => e.type.endsWith(':mirrored')).length;
-    expect(mirroredCount).toBe(1); // unique payload ensures only one mirrored
+    expect(mirroredCount).toBe(1);
   });
 });

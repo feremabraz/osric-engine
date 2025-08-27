@@ -1,10 +1,5 @@
+import { DomainEngine, DomainMemoryStore } from '@osric/osric-engine';
 import { describe, expect, it } from 'vitest';
-import { DomainEngine } from '../../osric-engine/engine';
-import { DomainMemoryStore } from '../../osric-engine/memoryStore';
-import '../../osric-engine/commands/createCharacter';
-import '../../osric-engine/commands/startBattle';
-
-// DE-04 startBattle tests
 
 describe('DE-04 startBattle', () => {
   function setup() {
@@ -46,8 +41,6 @@ describe('DE-04 startBattle', () => {
     const sim = engine.simulate('osric:startBattle', { id: 'b2', participantIds: ['c1', 'c2'] });
     expect(sim.result.ok).toBe(true);
     expect(store.getBattle('b2')).toBeUndefined();
-    // diff should show created battle entity via created array referencing battle state list size change
-    // Our diff heuristic only tracks arrays of objects with id. Battles array fits; expect one created item with id b2.
     const createdIds = sim.diff.created.map((obj) => (obj as { id?: string }).id).filter(Boolean);
     expect(createdIds).toContain('b2');
   });

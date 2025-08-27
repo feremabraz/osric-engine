@@ -15,6 +15,5 @@ export function grantXp(store: DomainMemoryStore, id: string, amount: number): C
 }
 
 export function listCharacters(store: DomainMemoryStore): Character[] {
-  // Return a shallow copy to avoid external mutation
   return [...store.getState().characters];
 }

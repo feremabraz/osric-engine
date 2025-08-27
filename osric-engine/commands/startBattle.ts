@@ -1,4 +1,4 @@
-import { command, domainFail } from '../../engine';
+import { command, domainFail } from '@osric/engine';
 import type { BattleParticipant, BattleState } from '../domain/entities/battle';
 import type { DomainMemoryStore } from '../memoryStore';
 
@@ -21,7 +21,6 @@ command<StartBattleParams>('osric:startBattle')
     if (p.participantIds.length === 0) return domainFail('NO_PARTICIPANTS');
     return;
   })
-  // Use a bespoke load rule to verify each participant.
   .load((_acc, p, ctx) => {
     const store = (ctx as unknown as { store: DomainMemoryStore }).store;
     for (const cid of p.participantIds) {
@@ -29,15 +28,19 @@ command<StartBattleParams>('osric:startBattle')
         return domainFail('CHAR_NOT_FOUND');
       }
     }
+    const nonCiv = p.participantIds.filter((cid) => store.getCharacter(cid)?.role !== 'civilian');
+    if (nonCiv.length === 0) return domainFail('NO_ELIGIBLE_PARTICIPANTS');
     return {};
   })
   .mutate((_acc, p, ctx) => {
     const store = (ctx as unknown as { store: DomainMemoryStore }).store;
     if (store.getBattle(p.id)) return domainFail('DUPLICATE_BATTLE');
-    const participants: BattleParticipant[] = p.participantIds.map((id) => ({
-      id,
-      initiative: null,
-    }));
+    const participants: BattleParticipant[] = p.participantIds
+      .filter((id) => store.getCharacter(id)?.role !== 'civilian')
+      .map((id) => ({
+        id,
+        initiative: null,
+      }));
     const battle: BattleState = { id: p.id, round: 1, participants, status: 'pending' };
     store.addBattle(battle);
     return {};

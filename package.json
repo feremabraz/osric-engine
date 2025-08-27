@@ -1,4 +1,8 @@
 {
+  "author": {
+    "name": "YFernando Emmanuel Braz",
+    "email": "hello@fernandobraz.online"
+  },
   "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
@@ -11,12 +15,13 @@
   "packageManager": "pnpm@10.11.0",
   "private": true,
   "scripts": {
-    "check": "tsc --noEmit && biome lint && vitest run",
+    "check": "tsc --noEmit && biome lint && node scripts/check-imports.mjs && vitest run",
     "format": "biome format --write .",
-    "lint": "biome lint --write .",
+    "lint": "biome lint --write . && node scripts/check-imports.mjs",
+    "lint:imports": "node scripts/check-imports.mjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "prepare": "husky"
   },
-  "version": "0.4.0"
+  "version": "0.5.0"
 }

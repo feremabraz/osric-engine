@@ -49,12 +49,4 @@ The engine orchestrates a single linear stage sequence per command: validate -> 
 
 ## Non-Goals
 - Generic plugin hooks
-- Parallel rule execution (future possibility once dependency metadata warrants)
-- Schema validation of params (current minimal approach uses manual validate rules)
-
-See subsequent files for deeper dives:
-- `01-dsl.md`
-- `02-execution.md`
-- `03-results-effects.md`
-- `04-determinism-integrity.md`
-- `05-batch-simulation.md`
+- Parallel rule execution

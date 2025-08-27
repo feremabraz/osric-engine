@@ -1,5 +1,3 @@
-// Provides stable hashing for the accumulator to detect unintended mutations.
-
 import { hashValue } from './hash';
 
 export type IntegrityHash = bigint;

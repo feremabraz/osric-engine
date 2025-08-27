@@ -1,10 +1,14 @@
-import { MemoryStore as CoreMemoryStore } from '../engine/core/types';
+import { MemoryStore as CoreMemoryStore } from '@osric/engine';
 import type { BattleState } from './domain/entities/battle';
 
 export interface Character {
   id: string;
   name: string;
   xp: number;
+  hpMax?: number;
+  hp?: number;
+  ac?: number;
+  role?: 'hostile' | 'civilian' | 'neutral';
 }
 
 export interface DomainState {
@@ -36,6 +40,10 @@ export class DomainMemoryStore extends CoreMemoryStore<DomainState> {
     if (!c) throw new Error('Character not found');
     if (patch.name !== undefined) c.name = patch.name;
     if (patch.xp !== undefined) c.xp = patch.xp;
+    if (patch.hpMax !== undefined) c.hpMax = patch.hpMax;
+    if (patch.hp !== undefined) c.hp = patch.hp;
+    if (patch.ac !== undefined) c.ac = patch.ac;
+    if (patch.role !== undefined) c.role = patch.role;
   }
 
   addBattle(b: BattleState): void {

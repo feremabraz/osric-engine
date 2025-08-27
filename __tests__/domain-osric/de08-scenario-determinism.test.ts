@@ -1,6 +1,5 @@
-// DE-08 scenario determinism test
+import { runDeterminismScenario } from '@osric/osric-engine';
 import { describe, expect, it } from 'vitest';
-import { runDeterminismScenario } from '../../osric-engine/scenarios/determinism';
 
 describe('DE-08 scenario determinism', () => {
   it('produces identical JSON for same seed', () => {

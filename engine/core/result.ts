@@ -1,5 +1,3 @@
-// Unified discriminated union for command outcomes.
-
 export interface Effect {
   type: string;
   target: string;
@@ -23,9 +21,9 @@ export interface SuccessResult<T = unknown> {
 export interface DomainFailureResult {
   ok: false;
   type: 'domain-failure';
-  code: string; // domain-specific code
+  code: string;
   message?: string;
-  effects: Effect[]; // usually empty; included for completeness / future use
+  effects: Effect[];
 }
 
 export interface EngineFailureResult {
@@ -33,7 +31,7 @@ export interface EngineFailureResult {
   type: 'engine-failure';
   code: EngineFailureCode;
   message?: string;
-  effects: Effect[]; // engine failures should not normally have effects
+  effects: Effect[];
 }
 
 export type CommandOutcome<T = unknown> =
@@ -41,7 +39,6 @@ export type CommandOutcome<T = unknown> =
   | DomainFailureResult
   | EngineFailureResult;
 
-// Helper constructors (frozen to discourage mutation of return objects)
 export function success<T>(data: T, effects: Effect[] = []): SuccessResult<T> {
   const r: SuccessResult<T> = { ok: true, type: 'success', data, effects: effects.slice() };
   return Object.freeze(r);
@@ -76,8 +73,6 @@ export function engineFail(
   };
   return Object.freeze(r);
 }
-
-// Type guards for optional convenience
 
 export function isSuccess<T>(o: CommandOutcome<T>): o is SuccessResult<T> {
   return o.ok;

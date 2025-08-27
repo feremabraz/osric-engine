@@ -1,4 +1,4 @@
-import type { Effect } from '../../engine';
+import type { Effect } from '@osric/engine';
 
 export function mirrorBattleEffects(effects: Effect[]): Effect[] {
   const seen = new Set<string>();

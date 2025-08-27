@@ -1,6 +1,3 @@
-// Effects Buffer. Append-only collecting effects during command execution.
-// Drain returns an immutable snapshot and clears internal storage.
-
 import type { Effect } from './result';
 
 export class EffectsBuffer {

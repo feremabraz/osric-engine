@@ -1,8 +1,6 @@
-import { domainFail } from '../../engine';
+import { domainFail } from '@osric/engine';
 import type { DomainMemoryStore } from '../memoryStore';
 
-// Generic helper that ensures params[idField] refers to an existing character id.
-// We avoid constraining P to an index signature so concrete param types remain assignable.
 export function requireCharacter<P, K extends keyof P & string>(
   idField: K,
   code = 'CHAR_NOT_FOUND'

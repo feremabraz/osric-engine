@@ -5,6 +5,10 @@
 - Keep parameterized (id field, failure code override) for versatility.
 - Return minimal empty fragment `{}`; do not couple to unrelated accumulator data.
 
+Evolution points:
+- `requireLOS` / `requireInRange` start permissive. Later, read canonical positions from the store and compute geometry (no randomness) in Calc.
+- `requireInBattle` reads participation flags only. Mutations to membership happen in battle lifecycle commands (start/end/turn), not in the rule.
+
 ## Adding Another Shared Rule
 1. Implement function returning rule fn.
 2. Replace duplicate inline logic across ≥2 commands.

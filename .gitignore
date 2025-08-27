@@ -1,4 +1,11 @@
-/node_modules
-/coverage
+node_modules
+dist
 .pnpm-debug.log*
 *.tsbuildinfo
+*.tgz
+release
+*.AppImage
+*.exe
+*.asar
+*.pak
+builder-debug.yml

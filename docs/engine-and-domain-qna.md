@@ -86,6 +86,11 @@ No. Fragments are frozen; attempted mutation throws or is prevented by freeze se
 - Mutate: apply store changes
 - Emit: enqueue effects (should not mutate store)
 
+State insertion points (progressive enhancement)
+- Positions/geometry: Introduce canonical world positions in Load/Calc stages once the domain persists them (e.g., character.x/y). Initially, LOS/Range rules can be permissive; later, wire them to geometry with deterministic math only.
+- Combat stats: Add optional fields (hpMax, hp, ac) on Character. Commands like resolveAttack/applyDamage/checkDefeat read & mutate these only when present; they always emit effects for the viewer.
+- Battle membership: Store battle participation on entities; requireInBattle checks read-only in Validate/Load; mutations occur via battle lifecycle commands in Mutate.
+
 ### Why separate calc and emit?
 To isolate pure or deterministic calculations from side-effect description, simplifying tests and making RNG usage local.
 

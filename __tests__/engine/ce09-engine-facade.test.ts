@@ -1,10 +1,6 @@
+import { CommandRegistry, Engine, MemoryStore, command } from '@osric/engine';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { command } from '../../engine/authoring/dsl';
-import { MemoryStore } from '../../engine/core/types';
-import { Engine } from '../../engine/facade/engine';
-import { CommandRegistry } from '../../engine/facade/registry';
 
-// MemoryStore implementing EngineStore
 const makeStore = () => new MemoryStore({});
 
 describe('CE-09 Engine Facade', () => {
@@ -50,7 +46,7 @@ describe('CE-09 Engine Facade', () => {
     ]);
     expect(batch.results.length).toBe(3);
     const successCount = batch.results.filter((r) => r.ok).length;
-    expect(successCount).toBe(2); // failCmd fails
-    expect(batch.effects.length).toBe(0); // no rule emitted effects
+    expect(successCount).toBe(2);
+    expect(batch.effects.length).toBe(0);
   });
 });

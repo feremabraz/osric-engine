@@ -1,12 +1,6 @@
+import { createCharacter, domainGrantXp as grantXp, listCharacters } from '@osric/osric-engine';
+import { DomainMemoryStore } from '@osric/osric-engine';
 import { describe, expect, it } from 'vitest';
-import {
-  createCharacter,
-  grantXp,
-  listCharacters,
-} from '../../osric-engine/domain/entities/character';
-import { DomainMemoryStore } from '../../osric-engine/memoryStore';
-
-// DE-01 tests: create / update (via grantXp) / query
 
 describe('DE-01 Domain Store & Entities', () => {
   it('creates and lists characters', () => {

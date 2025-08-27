@@ -1,6 +1,5 @@
+import { CommandRegistry, command } from '@osric/engine';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { command } from '../../engine/authoring/dsl';
-import { CommandRegistry } from '../../engine/facade/registry';
 
 interface DescriptorLike {
   stages: {
@@ -11,6 +10,7 @@ interface DescriptorLike {
     emit: unknown[];
   };
 }
+
 function countStages(d: DescriptorLike) {
   return {
     validate: d.stages.validate.length,

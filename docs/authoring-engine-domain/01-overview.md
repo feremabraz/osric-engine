@@ -9,7 +9,7 @@ This section explains how to build a domain layer atop the common engine. OSRIC 
 - Post-process successful effects (battle mirroring) in wrapper.
 - Supply deterministic scenario(s) for regression & reproducibility.
 
-## Folder Structure (Current)
+## Folder Structure
 ```
 osric-engine/
   engine.ts
