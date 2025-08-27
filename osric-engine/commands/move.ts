@@ -1,6 +1,10 @@
+/**
+ * osric:move — Move an actor in exploration context; emits a Move effect.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:move. */
 export interface MoveParams {
   id: string;
   direction: 'forward' | 'backward' | 'strafeLeft' | 'strafeRight';

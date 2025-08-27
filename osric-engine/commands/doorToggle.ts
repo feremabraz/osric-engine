@@ -1,6 +1,10 @@
+/**
+ * osric:doorToggle — Emit a DoorToggle effect for a door entity.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:doorToggle. */
 export interface DoorToggleParams {
   id: string;
 }

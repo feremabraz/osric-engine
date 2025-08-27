@@ -1,6 +1,10 @@
+/**
+ * osric:wait — Make an actor wait; emits a Wait effect.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:wait. */
 export interface WaitParams {
   id: string;
 }

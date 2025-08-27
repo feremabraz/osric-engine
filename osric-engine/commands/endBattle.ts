@@ -1,9 +1,14 @@
+/**
+ * osric:endBattle — Emit a BattleEnded effect for a battle id.
+ */
 import { command, domainFail } from '@osric/engine';
 
+/** Parameters for osric:endBattle. */
 export interface EndBattleParams {
   id: string;
 }
 
+/** Result payload for osric:endBattle. */
 export interface EndBattleResult {
   ended: true;
 }

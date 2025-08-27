@@ -1,9 +1,14 @@
+/**
+ * osric:tickStatuses — Emit StatusTicked for a list of actors (no state here).
+ */
 import { command, domainFail } from '@osric/engine';
 
+/** Parameters for osric:tickStatuses. */
 export interface TickStatusesParams {
   actorIds: string[];
 }
 
+/** Result payload for osric:tickStatuses. */
 export interface TickStatusesResult {
   ticked: true;
 }

@@ -1,12 +1,18 @@
+/**
+ * osric:applyDamage — Apply damage to a target character and emit a Damage effect.
+ * If the character has hp, clamps to zero; also returns prev/next hp.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:applyDamage. */
 export interface ApplyDamageParams {
   targetId: string;
   amount: number;
   sourceId?: string;
 }
 
+/** Result payload for osric:applyDamage. */
 export interface ApplyDamageResult {
   targetId: string;
   amount: number;

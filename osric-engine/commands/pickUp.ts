@@ -1,11 +1,16 @@
+/**
+ * osric:pickUp — Pick up an item and emit an ItemPickedUp effect.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:pickUp. */
 export interface PickUpParams {
   actorId: string;
   itemId: string;
 }
 
+/** Result payload for osric:pickUp. */
 export interface PickUpResult {
   picked: true;
 }

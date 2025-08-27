@@ -1,10 +1,15 @@
+/**
+ * osric:checkDefeat — Check if a character is defeated (hp <= 0) and emit effects.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:checkDefeat. */
 export interface CheckDefeatParams {
   targetId: string;
 }
 
+/** Result payload for osric:checkDefeat. */
 export interface CheckDefeatResult {
   targetId: string;
   defeated?: boolean;

@@ -1,14 +1,19 @@
+/**
+ * osric:battleMove — Move an actor within battle context and emit a BattleMove effect.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 import { requireAlive } from '../shared-rules/requireAlive';
 import { requireInBattle } from '../shared-rules/requireInBattle';
 
+/** Parameters for osric:battleMove. */
 export interface BattleMoveParams {
   id: string;
   dx: number;
   dy: number;
 }
 
+/** Result payload for osric:battleMove. */
 export interface BattleMoveResult {
   moved: true;
 }

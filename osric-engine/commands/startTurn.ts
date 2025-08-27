@@ -1,12 +1,17 @@
+/**
+ * osric:startTurn — Start a character's turn in battle and emit TurnStarted.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 import { requireAlive } from '../shared-rules/requireAlive';
 import { requireInBattle } from '../shared-rules/requireInBattle';
 
+/** Parameters for osric:startTurn. */
 export interface StartTurnParams {
   id: string;
 }
 
+/** Result payload for osric:startTurn. */
 export interface StartTurnResult {
   started: true;
 }

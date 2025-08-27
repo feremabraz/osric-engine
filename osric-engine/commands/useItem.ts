@@ -1,11 +1,16 @@
+/**
+ * osric:useItem — Use an item and emit an ItemUsed effect.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:useItem. */
 export interface UseItemParams {
   actorId: string;
   itemId: string;
 }
 
+/** Result payload for osric:useItem. */
 export interface UseItemResult {
   used: true;
 }

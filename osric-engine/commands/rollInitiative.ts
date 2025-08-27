@@ -1,9 +1,14 @@
+/**
+ * osric:rollInitiative — Roll initiative for a battle; emits InitiativeRolled.
+ */
 import { command, domainFail } from '@osric/engine';
 
+/** Parameters for osric:rollInitiative. */
 export interface RollInitiativeParams {
   battleId: string;
 }
 
+/** Result payload for osric:rollInitiative. */
 export interface RollInitiativeResult {
   rolled: true;
 }

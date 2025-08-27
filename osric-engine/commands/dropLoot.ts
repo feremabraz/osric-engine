@@ -1,10 +1,15 @@
+/**
+ * osric:dropLoot — Emit a LootDropped effect with item list for an owner.
+ */
 import { command, domainFail } from '@osric/engine';
 
+/** Parameters for osric:dropLoot. */
 export interface DropLootParams {
   ownerId: string;
   items: string[];
 }
 
+/** Result payload for osric:dropLoot. */
 export interface DropLootResult {
   dropped: true;
 }

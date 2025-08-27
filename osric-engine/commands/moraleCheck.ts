@@ -1,11 +1,17 @@
+/**
+ * osric:moraleCheck — Emit a MoraleChecked effect for the character.
+ * This is a placeholder command with no mutations.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:moraleCheck. */
 export interface MoraleCheckParams {
   id: string;
   context?: string;
 }
 
+/** Result payload for osric:moraleCheck. */
 export interface MoraleCheckResult {
   checked: true;
 }

@@ -1,12 +1,17 @@
+/**
+ * osric:endTurn — End the current turn for an actor in battle and emit an effect.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 import { requireAlive } from '../shared-rules/requireAlive';
 import { requireInBattle } from '../shared-rules/requireInBattle';
 
+/** Parameters for osric:endTurn. */
 export interface EndTurnParams {
   id: string;
 }
 
+/** Result payload for osric:endTurn. */
 export interface EndTurnResult {
   ended: true;
 }

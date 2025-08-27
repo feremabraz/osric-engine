@@ -1,3 +1,8 @@
+/** @packageDocumentation
+ * Public API for @osric/domain-osric. Import from '@osric/osric-engine'.
+ * This barrel re-exports domain engine, store, scenario, and commands.
+ */
+
 export { DomainEngine } from './engine';
 export { DomainMemoryStore } from './memoryStore';
 

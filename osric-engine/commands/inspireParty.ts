@@ -1,14 +1,19 @@
+/**
+ * osric:inspireParty — Increase party morale bonus by a positive amount.
+ */
 import { command, domainFail } from '@osric/engine';
 import type { DomainMemoryStore } from '../memoryStore';
 import type { Character } from '../memoryStore';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:inspireParty. */
 export interface InspirePartyParams {
   leaderId: string;
   bonus: number;
   message?: string;
 }
 
+/** Result payload for osric:inspireParty. */
 export interface InspirePartyResult {
   affected: number;
   leaderId: string;

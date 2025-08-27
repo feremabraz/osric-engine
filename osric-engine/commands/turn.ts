@@ -1,6 +1,10 @@
+/**
+ * osric:turn — Rotate an actor in exploration; emits a Turn effect.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:turn. */
 export interface TurnParams {
   id: string;
   direction: 'left' | 'right';

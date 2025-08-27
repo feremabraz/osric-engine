@@ -1,5 +1,9 @@
 import type { Effect } from '@osric/engine';
 
+/**
+ * Mirror one-time battle effects with a `:mirrored` suffix to aid renderers
+ * that consume effect streams. Duplicates are suppressed by a stable key.
+ */
 export function mirrorBattleEffects(effects: Effect[]): Effect[] {
   const seen = new Set<string>();
   const mirrored: Effect[] = [];
@@ -13,6 +17,7 @@ export function mirrorBattleEffects(effects: Effect[]): Effect[] {
   return mirrored;
 }
 
+/** @internal */
 function stablePayloadKey(payload: unknown): string {
   if (payload === null || payload === undefined) return 'null';
   if (typeof payload !== 'object') return String(payload);

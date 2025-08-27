@@ -1,9 +1,13 @@
+/**
+ * osric:resolveAttack — Resolve an attack roll against target AC and emit an effect.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 import { requireAlive } from '../shared-rules/requireAlive';
 import { requireInRange } from '../shared-rules/requireInRange';
 import { requireLOS } from '../shared-rules/requireLOS';
 
+/** Parameters for osric:resolveAttack. */
 export interface ResolveAttackParams {
   attackerId: string;
   targetId: string;
@@ -11,6 +15,7 @@ export interface ResolveAttackParams {
   modifiers?: number;
 }
 
+/** Result payload for osric:resolveAttack. */
 export interface ResolveAttackResult {
   attackerId: string;
   targetId: string;

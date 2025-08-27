@@ -1,12 +1,17 @@
+/**
+ * osric:applyStatus — Apply a temporary status to a character and emit an effect.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:applyStatus. */
 export interface ApplyStatusParams {
   targetId: string;
   kind: string;
   duration: number;
 }
 
+/** Result payload for osric:applyStatus. */
 export interface ApplyStatusResult {
   applied: true;
 }

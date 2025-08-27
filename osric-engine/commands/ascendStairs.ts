@@ -1,11 +1,16 @@
+/**
+ * osric:ascendStairs — Emit a LevelChange effect (direction up) for a character.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:ascendStairs. */
 export interface AscendStairsParams {
   id: string;
   toLevelId: string;
 }
 
+/** Result payload for osric:ascendStairs. */
 export interface AscendStairsResult {
   changed: true;
 }

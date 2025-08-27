@@ -1,10 +1,15 @@
+/**
+ * osric:die — Mark a character as dead via a Death effect (no state change here).
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:die. */
 export interface DieParams {
   targetId: string;
 }
 
+/** Result payload for osric:die. */
 export interface DieResult {
   targetId: string;
 }

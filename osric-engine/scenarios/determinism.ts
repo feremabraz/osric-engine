@@ -14,6 +14,10 @@ export interface ScenarioResult {
   finalState: unknown;
 }
 
+/**
+ * Run a small deterministic scenario exercising core domain commands.
+ * Returns the seed, the outcomes/effects produced, and the final store state.
+ */
 export function runDeterminismScenario(seed = 1234): ScenarioResult {
   const store = new DomainMemoryStore();
   const engine = new DomainEngine({ seed, store });
@@ -38,6 +42,7 @@ export function runDeterminismScenario(seed = 1234): ScenarioResult {
   return { seed, outcomes, effects: effectsAcc, finalState };
 }
 
+// Optional CLI entry for quick manual runs
 if (typeof require !== 'undefined' && require.main === module) {
   const seed = Number(process.argv[2]) || 1234;
   const res = runDeterminismScenario(seed);

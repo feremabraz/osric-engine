@@ -1,6 +1,10 @@
+/**
+ * osric:talk — Produce a Talk effect for a speaker and optional target/line.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:talk. */
 export interface TalkParams {
   speakerId: string;
   targetId?: string;

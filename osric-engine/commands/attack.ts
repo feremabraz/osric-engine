@@ -1,14 +1,20 @@
+/**
+ * osric:attack — Perform an attack roll from attacker to target.
+ * Produces an AttackRoll effect with the rolled value.
+ */
 import { command, domainFail } from '@osric/engine';
 import { requireCharacter } from '../shared-rules/characterExist';
 import { requireAlive } from '../shared-rules/requireAlive';
 import { requireInRange } from '../shared-rules/requireInRange';
 import { requireLOS } from '../shared-rules/requireLOS';
 
+/** Parameters for osric:attack. */
 export interface AttackParams {
   attackerId: string;
   targetId: string;
 }
 
+/** Result payload for osric:attack. */
 export interface AttackResult {
   attackerId: string;
   targetId: string;

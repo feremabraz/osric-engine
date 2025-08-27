@@ -1,12 +1,18 @@
+/**
+ * osric:createCharacter — Create a new character with id and name.
+ * Fails if the id already exists.
+ */
 import { command, domainFail } from '@osric/engine';
 import type { DomainMemoryStore } from '../memoryStore';
 import type { Character } from '../memoryStore';
 
+/** Parameters for osric:createCharacter. */
 export interface CreateCharacterParams {
   id: string;
   name: string;
 }
 
+/** Result payload for osric:createCharacter. */
 export interface CreateCharacterResult {
   id: string;
   name: string;

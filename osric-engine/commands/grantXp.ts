@@ -1,12 +1,18 @@
+/**
+ * osric:grantXp — Grant experience points to a character.
+ * Emits no battle effects; mutates the character's xp.
+ */
 import { command, domainFail, success } from '@osric/engine';
 import type { DomainMemoryStore } from '../memoryStore';
 import { requireCharacter } from '../shared-rules/characterExist';
 
+/** Parameters for osric:grantXp. */
 export interface GrantXpParams {
   id: string;
   amount: number;
 }
 
+/** Result payload for osric:grantXp. */
 export interface GrantXpResult {
   id: string;
   newXp: number;

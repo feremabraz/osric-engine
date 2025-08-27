@@ -1,12 +1,18 @@
+/**
+ * osric:startBattle — Start a battle with given participants.
+ * Filters out ineligible participants (e.g., civilians) and creates a BattleState.
+ */
 import { command, domainFail } from '@osric/engine';
 import type { BattleParticipant, BattleState } from '../domain/entities/battle';
 import type { DomainMemoryStore } from '../memoryStore';
 
+/** Parameters for osric:startBattle. */
 export interface StartBattleParams {
   id: string;
   participantIds: string[];
 }
 
+/** Result payload for osric:startBattle. */
 export interface StartBattleResult {
   id: string;
   round: number;
