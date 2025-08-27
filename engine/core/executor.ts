@@ -70,6 +70,9 @@ function executeStageRules(
   return null;
 }
 
+/** Execute a command descriptor through the fixed-stage pipeline.
+ * Advances RNG once at start; freezes and hashes fragments; drains effects on success.
+ */
 export function runCommand(
   descriptor: CommandDescriptor,
   rawParams: unknown,

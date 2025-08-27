@@ -1,3 +1,8 @@
+/**
+ * Deeply freeze a plain object graph to prevent mutation at runtime.
+ * Functions are left untouched, but nested objects/arrays are recursively
+ * frozen. Cycles are ignored after first visit.
+ */
 export type DeepReadonly<T> = T extends (...args: unknown[]) => unknown
   ? T
   : T extends object

@@ -1,3 +1,8 @@
+/** @packageDocumentation
+ * Public API for @osric/engine. Import from '@osric/engine'.
+ * This barrel re-exports stable symbols; see source files for detailed docs.
+ */
+
 export { command } from './authoring/dsl';
 export { makeCommandDescriptor } from './core/command';
 

@@ -1,8 +1,15 @@
+/**
+ * Minimal engine store interface used for snapshot/restore.
+ */
 export interface EngineStore {
   snapshot(): unknown;
   restore(snapshot: unknown): void;
 }
 
+/**
+ * Deep clone for plain data used by snapshotting. Rejects Maps, Sets, Symbols
+ * and Functions to keep store payloads deterministic and serializable.
+ */
 export function deepClonePlain<T>(value: T): T {
   if (value === null || typeof value !== 'object') return value;
   if (value instanceof Date) return new Date(value.getTime()) as unknown as T;
@@ -21,6 +28,10 @@ export function deepClonePlain<T>(value: T): T {
   return out as T;
 }
 
+/**
+ * Simple in-memory store backed by a plain object. Good default for tests and
+ * headless simulations. Not intended for concurrent use across workers.
+ */
 export class MemoryStore<TState extends object = Record<string, unknown>> implements EngineStore {
   private state: TState;
   constructor(initial: TState) {
@@ -33,9 +44,11 @@ export class MemoryStore<TState extends object = Record<string, unknown>> implem
     this.state = deepClonePlain(snapshot) as TState;
   }
 
+  /** Obtain a mutable reference to the internal state (for command rules). */
   getState(): TState {
     return this.state;
   }
+  /** Apply an in-place mutation on the internal state. */
   mutate(mutator: (state: TState) => void): void {
     mutator(this.state);
   }

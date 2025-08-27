@@ -1,7 +1,14 @@
+/**
+ * Deterministic pseudo-random number generator used by the engine.
+ *
+ * The generator is seedable and its state is snapshottable via `getState`/`setState`
+ * to guarantee deterministic simulations and batch rollback.
+ */
 export interface RNGState {
   s: number;
 }
 
+/** Small, fast PRNG suitable for gameplay determinism (not crypto). */
 export class RNG {
   private _s: number;
 
@@ -9,13 +16,16 @@ export class RNG {
     this._s = seed >>> 0 || 0x12345678;
   }
 
+  /** Obtain a copy of the current internal state. */
   getState(): RNGState {
     return { s: this._s };
   }
+  /** Restore the internal state from a previous snapshot. */
   setState(state: RNGState): void {
     this._s = state.s >>> 0;
   }
 
+  /** Uniform float in [0, 1). */
   float(): number {
     this._s += 0x6d2b79f5;
     let t = this._s;
@@ -25,6 +35,7 @@ export class RNG {
     return result;
   }
 
+  /** Integer in [min, max], inclusive. Throws if bounds are invalid. */
   int(min: number, max: number): number {
     if (!Number.isInteger(min) || !Number.isInteger(max))
       throw new Error('RNG.int bounds must be integers');
@@ -34,6 +45,7 @@ export class RNG {
   }
 }
 
+/** Factory for creating an `RNG` with optional seed. */
 export function createRng(seed?: number): RNG {
   return new RNG(seed);
 }

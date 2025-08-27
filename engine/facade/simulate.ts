@@ -8,6 +8,11 @@ export interface SimulationDiff {
   mutated: Array<{ collection: string; id: string | number }>;
 }
 
+/**
+ * Compute a shallow diff between two store snapshots organized as
+ * object-of-arrays of identifiable records. Differences are categorized
+ * as created, deleted, or mutated (ignoring the `id` field when comparing).
+ */
 export function diffSnapshots(before: unknown, after: unknown): SimulationDiff {
   const diff: SimulationDiff = { created: [], deleted: [], mutated: [] };
   if (!isPlainObject(before) || !isPlainObject(after)) return diff;
@@ -39,10 +44,12 @@ export function diffSnapshots(before: unknown, after: unknown): SimulationDiff {
   return diff;
 }
 
+/** @internal */
 function isPlainObject(v: unknown): v is Record<string, unknown> {
   return !!v && typeof v === 'object' && (v as object).constructor === Object;
 }
 
+/** @internal */
 function isIdentifiable(v: unknown): v is Identifiable & Record<string, unknown> {
   return (
     isPlainObject(v) &&
@@ -51,6 +58,7 @@ function isIdentifiable(v: unknown): v is Identifiable & Record<string, unknown>
   );
 }
 
+/** @internal */
 function stableShallow(obj: object): string {
   const entries = Object.entries(obj)
     .filter(([k]) => k !== 'id')

@@ -2,6 +2,11 @@ import { makeCommandDescriptor } from '../core/command';
 import type { CommandDescriptor, RuleFn } from '../core/command';
 import { CommandRegistry } from '../facade/registry';
 
+/** Chainable builder for authoring commands in fixed stages.
+ * @typeParam Params - Command params shape
+ * @typeParam Acc - Accumulator data shape produced by rules
+ * @typeParam Ctx - Execution context extensions available to rules
+ */
 export interface CommandBuilder<Params = unknown, Acc = unknown, Ctx = unknown> {
   validate(fn: RuleFn<Params, Acc, Ctx, unknown>): CommandBuilder<Params, Acc, Ctx>;
   load(fn: RuleFn<Params, Acc, Ctx, unknown>): CommandBuilder<Params, Acc, Ctx>;
@@ -11,6 +16,11 @@ export interface CommandBuilder<Params = unknown, Acc = unknown, Ctx = unknown> 
   descriptor(): CommandDescriptor;
 }
 
+/** Create a staged command descriptor and auto-register it by key.
+ * Rules are attached in the order declared. At least one rule overall is required.
+ * @param key Unique command key (e.g. "osric:grantXp").
+ * @param _paramsSchema Optional schema placeholder for future validation tooling.
+ */
 export function command<Params = unknown, Acc = unknown, Ctx = unknown>(
   key: string,
   _paramsSchema?: unknown

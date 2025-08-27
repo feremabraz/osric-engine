@@ -6,15 +6,18 @@ import { engineFail } from './result';
 import type { RNG, RNGState } from './rng';
 import type { EngineStore } from './types';
 
+/** One command to execute inside a batch. */
 export interface BatchItem {
   key: string;
   params: unknown;
 }
 
+/** Batch execution options. */
 export interface BatchOptions {
   atomic?: boolean;
 }
 
+/** Result of a batch execution. */
 export interface BatchResult {
   ok: boolean;
   results: CommandOutcome[];
@@ -22,6 +25,7 @@ export interface BatchResult {
   failed?: CommandOutcome[];
 }
 
+/** Execute a batch of command items, optionally atomically. */
 export function processBatch(args: {
   items: BatchItem[];
   options: BatchOptions;

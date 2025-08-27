@@ -1,11 +1,17 @@
+/**
+ * Stable, deterministic hashing utilities used for integrity checks and
+ * debugging. Not cryptographically secure.
+ */
 const FNV_OFFSET_64 = 0xcbf29ce484222325n;
 const FNV_PRIME_64 = 0x100000001b3n;
 
+/** @internal */
 function mix64(h: bigint, byte: number): bigint {
   const x = (h ^ BigInt(byte & 0xff)) * FNV_PRIME_64;
   return x & 0xffffffffffffffffn;
 }
 
+/** @internal */
 function* utf8(str: string): Generator<number> {
   for (let i = 0; i < str.length; ) {
     const cp = str.codePointAt(i);
@@ -28,12 +34,14 @@ function* utf8(str: string): Generator<number> {
   }
 }
 
+/** @internal */
 function hashString64(h: bigint, s: string): bigint {
   let acc = h;
   for (const b of utf8(s)) acc = mix64(acc, b);
   return acc;
 }
 
+/** @internal */
 function hashPrimitive64(h: bigint, v: unknown): bigint {
   switch (typeof v) {
     case 'string':
@@ -57,6 +65,7 @@ function hashPrimitive64(h: bigint, v: unknown): bigint {
   return h;
 }
 
+/** @internal */
 function hashAny64(h: bigint, v: unknown, seen: WeakSet<object>): bigint {
   if (v === null || typeof v !== 'object') return hashPrimitive64(h, v);
   if (seen.has(v as object)) throw new Error('hash: circular reference');
@@ -78,18 +87,22 @@ function hashAny64(h: bigint, v: unknown, seen: WeakSet<object>): bigint {
   return mix64(acc, 0x7d);
 }
 
+/** 64-bit FNV-1a hash of any JSON-like value. */
 export function fnv1a64(value: unknown): bigint {
   return hashAny64(FNV_OFFSET_64, value, new WeakSet());
 }
 
+/** Convenience alias for the current hash function. */
 export function hashValue(value: unknown): bigint {
   return fnv1a64(value);
 }
 
+/** Hex string of the 64-bit hash, zero-padded. */
 export function hashHex(value: unknown): string {
   return fnv1a64(value).toString(16).padStart(16, '0');
 }
 
+/** Combine two 64-bit hashes into a single 64-bit result. */
 export function combineHash(a: bigint, b: bigint): bigint {
   return (a ^ (b + 0x9e3779b97f4a7c15n + (a << 6n) + (a >> 2n))) & 0xffffffffffffffffn;
 }
