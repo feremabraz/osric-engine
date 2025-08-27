@@ -1,6 +1,6 @@
 # OSRIC Engine and Game(s)
 
-OSRIC, short for Old School Reference and Index Compilation, is a fantasy role-playing game system and a remake of the 1st edition of Advanced Dungeons & Dragons (AD&D).
+OSRIC, short for Old School Reference and Index Compilation, is a fantasy role-playing game system and a remake of the 1st edition of Advanced Dungeons & Dragons (AD&D). The present game is a technical remake of Ultima Underworld.
 
 ![Preview](README.webp)
 
@@ -77,6 +77,7 @@ console.log(sim.diff);
 
 - See [authoring-engine](docs/authoring-engine/01-overview.md)
 - See [authoring-engine-domain](docs/authoring-engine-domain/01-overview.md)
+- See [authoring-renderer](docs/authoring-renderer/01-overview.md)
 - Run the viewer app
   - pnpm -w -F @osric/viewer-underworld dev
 

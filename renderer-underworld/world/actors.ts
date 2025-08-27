@@ -1,8 +1,9 @@
-import type { Texture } from '@osric/renderer-underworld';
+import type { Texture } from '../types';
 
 export type ActorKind = 'knight' | 'skeleton' | 'caster';
 export type ActorVariant = 'main' | 'attack';
 
+/** @internal */
 export type ActorImage = {
   kind: ActorKind;
   variant: ActorVariant;
@@ -10,9 +11,11 @@ export type ActorImage = {
   pivotY: number;
 };
 
+/** @internal */
 function makeTexture(w: number, h: number): Texture {
   return { width: w, height: h, data: new Uint8ClampedArray(w * h * 4) };
 }
+/** @internal */
 function put(tex: Texture, x: number, y: number, r: number, g: number, b: number, a = 255) {
   if (x < 0 || y < 0 || x >= tex.width || y >= tex.height) return;
   const i = (y * tex.width + x) * 4;
@@ -22,6 +25,7 @@ function put(tex: Texture, x: number, y: number, r: number, g: number, b: number
   tex.data[i + 3] = a;
 }
 
+/** @internal */
 function drawEllipse(
   tex: Texture,
   cx: number,
@@ -39,12 +43,14 @@ function drawEllipse(
   }
 }
 
+/** @internal */
 function colorFor(kind: ActorKind): [number, number, number] {
   if (kind === 'knight') return [160, 160, 180];
   if (kind === 'skeleton') return [220, 220, 210];
   return [150, 120, 180];
 }
 
+/** @internal */
 export function generateActor(kind: ActorKind, variant: ActorVariant, height = 80): ActorImage {
   const w = Math.floor(height * 0.6);
   const h = height;
@@ -96,6 +102,7 @@ export function generateActor(kind: ActorKind, variant: ActorVariant, height = 8
   return { kind, variant, texture: tex, pivotY: h - 1 };
 }
 
+/** @internal */
 export function generateActorSet(
   kinds: ActorKind[] = ['knight', 'skeleton', 'caster'] as ActorKind[]
 ) {

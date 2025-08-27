@@ -1,7 +1,6 @@
-import type { LightLUT, MoodLUT, Texture } from '@osric/renderer-underworld';
+import type { LightLUT, MoodLUT, Palette, Texture } from '../types';
 
-type Palette = Array<{ r: number; g: number; b: number }>;
-
+/** Base 16-color palette used by procedural shading. */
 export const BASE_PALETTE: Palette = [
   { r: 10, g: 10, b: 12 },
   { r: 28, g: 28, b: 34 },
@@ -21,6 +20,10 @@ export const BASE_PALETTE: Palette = [
   { r: 220, g: 200, b: 160 },
 ];
 
+/**
+ * Build a perceptual light curve lookup with `levels` steps (default 16).
+ * Values are in [0,1] and non-decreasing; index 0 is darkest.
+ */
 export function makeLightLUT(levels = 16): LightLUT {
   const lut: number[] = [];
   for (let i = 0; i < levels; i++) {
@@ -36,6 +39,10 @@ export const MOOD_LUTS: MoodLUT[] = [
   { name: 'cold', multiply: { r: 0.85, g: 0.9, b: 1.1 }, add: { r: 0.0, g: 0.0, b: 0.05 } },
 ];
 
+/**
+ * Apply scalar light and an optional mood tint to a texture, returning a new texture.
+ * Output channels are clamped to [0,255]; alpha is preserved.
+ */
 export function applyLightAndMood(tex: Texture, light: number, mood?: MoodLUT): Texture {
   const out = new Uint8ClampedArray(tex.data.length);
   const L = Math.max(0, Math.min(1, light));

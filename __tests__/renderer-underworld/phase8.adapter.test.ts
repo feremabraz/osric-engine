@@ -21,7 +21,7 @@ function mkWorld() {
   return world;
 }
 
-describe('Phase 18: adapter and headless invariants', () => {
+describe('Phase 8: adapter and headless invariants', () => {
   it('adapter maps local inputs to engine commands', () => {
     const world = mkWorld();
     const cmds: Sim.Command[] = [

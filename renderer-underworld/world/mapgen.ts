@@ -1,5 +1,6 @@
 import { createRng } from '@osric/engine';
 
+/** Single dungeon cell with materials, light, and door flag. */
 export type Cell = {
   wall: number;
   floor: number;
@@ -8,6 +9,7 @@ export type Cell = {
   door: boolean;
 };
 
+/** Procedurally generated map data with player start and actors. */
 export type MapData = {
   width: number;
   height: number;
@@ -22,6 +24,7 @@ export type MapData = {
   }>;
 };
 
+/** Generate a small dungeon map deterministically from a seed. */
 export function generateMap(seed: number, width = 32, height = 32): MapData {
   const rng = createRng(seed);
   const cells: Cell[] = Array.from({ length: width * height }, () => ({

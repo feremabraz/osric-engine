@@ -1,35 +1,26 @@
 import type { RNG } from '@osric/engine';
-import type { Tick } from '@osric/renderer-underworld';
+import type { Tick } from '../types';
 import type { MapData } from './mapgen';
-
-export type Player = { x: number; y: number; angle: number };
-export type ActorState = 'idle' | 'chase';
-export type Actor = {
-  id: number;
-  x: number;
-  y: number;
-  kind: string;
-  facing: number;
-  state: ActorState;
-};
-
-export type World = {
-  tick: Tick;
-  map: MapData;
-  player: Player;
-  actors: Actor[];
-  openDoors: Set<string>;
-  battle?: { id: string; active: boolean; participants: string[] };
-  hitFlashes: Map<number, number>;
-  dissolves: Map<number, { stepsRemaining: number; total: number }>;
-  cameraShake?: { ticksRemaining: number; amplitude: number; seed: number };
-  characterMap?: Map<string, number>;
-};
+import type { Actor, ActorState, Command, Player, World } from './types';
+import {
+  getActorIdForCharacter,
+  getCharacterIdForActor,
+  registerCharacterMapping,
+  unregisterCharacterMapping,
+} from './types';
+export type { World, Player, Actor, ActorState, Command } from './types';
+export {
+  getCharacterIdForActor,
+  getActorIdForCharacter,
+  registerCharacterMapping,
+  unregisterCharacterMapping,
+} from './types';
 
 function key(x: number, y: number) {
   return `${x},${y}`;
 }
 
+/** Create an initial world state from map data, seeding actors and player start. */
 export function createWorldFromMap(map: MapData): World {
   let id = 1;
   const actors: Actor[] = map.actors.map((a) => ({ id: id++, ...a, state: 'idle' as ActorState }));
@@ -48,6 +39,7 @@ export function createWorldFromMap(map: MapData): World {
   };
 }
 
+/** Check whether a door cell at (x,y) is currently closed. */
 export function isDoorClosed(world: World, x: number, y: number): boolean {
   const idx = y * world.map.width + x;
   const cell = world.map.cells[idx];
@@ -55,12 +47,14 @@ export function isDoorClosed(world: World, x: number, y: number): boolean {
   return !world.openDoors.has(key(x, y));
 }
 
+/** Mark a door at (x,y) as open (true) or closed (false). */
 export function setDoorOpen(world: World, x: number, y: number, open: boolean): void {
   const k = key(x, y);
   if (open) world.openDoors.add(k);
   else world.openDoors.delete(k);
 }
 
+/** Returns true if the position collides with walls or closed doors, or is out of bounds. */
 export function isBlocked(world: World, x: number, y: number): boolean {
   const xi = Math.floor(x);
   const yi = Math.floor(y);
@@ -85,27 +79,7 @@ function moveWithSlide(
   return { x, y };
 }
 
-export type CommandMoveForward = { type: 'MoveForward' };
-export type CommandMoveBackward = { type: 'MoveBackward' };
-export type CommandStrafeLeft = { type: 'StrafeLeft' };
-export type CommandStrafeRight = { type: 'StrafeRight' };
-export type CommandTurnLeft = { type: 'TurnLeft' };
-export type CommandTurnRight = { type: 'TurnRight' };
-export type CommandOpenDoor = { type: 'OpenDoor' };
-export type CommandWait = { type: 'Wait' };
-export type CommandAttack = { type: 'Attack' };
-export type CommandInteract = { type: 'Interact' };
-export type Command =
-  | CommandMoveForward
-  | CommandMoveBackward
-  | CommandStrafeLeft
-  | CommandStrafeRight
-  | CommandTurnLeft
-  | CommandTurnRight
-  | CommandOpenDoor
-  | CommandWait
-  | CommandAttack
-  | CommandInteract;
+// Commands are defined in './types'
 
 const STEP = 0.5;
 const TURN = Math.PI / 12;
@@ -193,6 +167,10 @@ function stepActors(world: World, rng: RNG): void {
   }
 }
 
+/**
+ * Advance the simulation by one tick applying given commands, moving actors,
+ * and updating transient effects (flashes, dissolves, shake).
+ */
 export function advanceTurn(world: World, commands: Command[], rng: RNG): World {
   const next: World = {
     tick: ((world.tick as unknown as number) + 1) as Tick,
@@ -301,12 +279,14 @@ export function advanceTurn(world: World, commands: Command[], rng: RNG): World 
   return next;
 }
 
+/** Enqueue a short flash effect for a given actor. */
 export function enqueueHitFlash(world: World, actorId: number, durationTicks: number): World {
   const next = { ...world, hitFlashes: new Map(world.hitFlashes) } as World;
   next.hitFlashes.set(actorId, Math.max(1, Math.floor(durationTicks)));
   return next;
 }
 
+/** Start a dissolve effect on an actor which will remove it after `steps`. */
 export function startDissolve(world: World, actorId: number, steps: number): World {
   const next = { ...world, dissolves: new Map(world.dissolves) } as World;
   next.dissolves.set(actorId, {
@@ -316,6 +296,7 @@ export function startDissolve(world: World, actorId: number, steps: number): Wor
   return next;
 }
 
+/** Start a small camera shake for `durationTicks` with given amplitude and seed. */
 export function startCameraShake(
   world: World,
   amplitude: number,
@@ -331,6 +312,7 @@ export function startCameraShake(
   return next;
 }
 
+/** Compute the camera offset for current shake state (if any). */
 export function getCameraOffset(world: World): { ox: number; oy: number } {
   if (!world.cameraShake) return { ox: 0, oy: 0 };
   const base = (world.tick as unknown as number) + world.cameraShake.seed;
@@ -340,15 +322,4 @@ export function getCameraOffset(world: World): { ox: number; oy: number } {
   return { ox, oy };
 }
 
-export function getActorIdForCharacter(world: World, characterId: string): number | undefined {
-  const id = world.characterMap?.get(characterId);
-  return typeof id === 'number' ? id : undefined;
-}
-
-export function getCharacterIdForActor(world: World, actorId: number): string | undefined {
-  if (!world.characterMap) return undefined;
-  for (const [charId, aId] of world.characterMap.entries()) {
-    if (aId === actorId) return charId;
-  }
-  return undefined;
-}
+// Character mapping helpers are exported from './types'

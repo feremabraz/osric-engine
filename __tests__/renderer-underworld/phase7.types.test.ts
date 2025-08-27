@@ -2,7 +2,7 @@ import { createRng } from '@osric/engine';
 import * as Underworld from '@osric/renderer-underworld';
 import { describe, expect, it } from 'vitest';
 
-describe('renderer-underworld Phase 0', () => {
+describe('Phase 7: renderer-underworld', () => {
   it('RNG produces numbers for a given seed', () => {
     const r = createRng(123 as number);
     const a = r.float();
@@ -16,14 +16,17 @@ describe('renderer-underworld Phase 0', () => {
     expect(c).not.toBeNaN();
   });
 
-  it('Types compile and basic API exists', () => {
-    const state: Underworld.WorldState = {
-      tick: 0 as Underworld.Tick,
-      seed: 1 as Underworld.Seed,
-      player: { x: 0, y: 0, angle: 0 },
-    };
-    const res = Underworld.applyCommand(state, { type: 'Wait' });
-    expect(res.next).toBe(state);
-    expect(Array.isArray(res.effects)).toBe(true);
+  it('Types compile and basic Sim API exists', () => {
+    const seed = 1 as Underworld.Seed;
+    const map = Underworld.Mapgen.generateMap(seed as unknown as number, 8, 8);
+    const world = Underworld.Sim.createWorldFromMap(map);
+    const res = Underworld.Sim.advanceTurn(
+      world,
+      [{ type: 'Wait' }],
+      createRng(seed as unknown as number)
+    );
+    expect(res).toBeTruthy();
+    expect(res.tick).not.toBe(world.tick);
+    expect(res.player).toBeTruthy();
   });
 });

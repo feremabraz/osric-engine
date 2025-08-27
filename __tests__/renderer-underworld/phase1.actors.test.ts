@@ -1,9 +1,9 @@
-import * as Underworld from '@osric/renderer-underworld';
 import { describe, expect, it } from 'vitest';
+import * as Actors from '../../renderer-underworld/world/actors';
 
 describe('Phase 1: placeholder actors', () => {
   it('generates main/attack variants with consistent dimensions and pivot', () => {
-    const imgs = Underworld.Actors.generateActorSet(['knight', 'skeleton', 'caster']);
+    const imgs = Actors.generateActorSet(['knight', 'skeleton', 'caster']);
     expect(imgs.length).toBe(6);
     for (const img of imgs) {
       expect(img.texture.width).toBeGreaterThan(0);

@@ -1,5 +1,5 @@
 import { createRng } from '@osric/engine';
-import type { Texture } from '@osric/renderer-underworld';
+import type { Texture } from '../types';
 
 function makeTexture(width: number, height: number): Texture {
   return { width, height, data: new Uint8ClampedArray(width * height * 4) };

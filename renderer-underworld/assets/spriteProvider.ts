@@ -1,6 +1,6 @@
-import type { Texture } from '@osric/renderer-underworld';
-import type { SpriteImage, SpriteProvider } from '@osric/renderer-underworld';
-export type { SpriteImage, SpriteProvider } from '@osric/renderer-underworld';
+import type { SpriteImage, SpriteProvider } from '../render/renderer';
+import type { Texture } from '../types';
+export type { SpriteImage, SpriteProvider } from '../render/renderer';
 
 export function createSpriteProvider(
   images: Record<string, Texture>,

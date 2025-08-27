@@ -1,61 +1,16 @@
-export type Tick = number & { readonly __brand: 'Tick' };
-export type Seed = number & { readonly __brand: 'Seed' };
-
-export interface CommandMoveForward {
-  type: 'MoveForward';
-}
-
-export interface CommandTurnLeft {
-  type: 'TurnLeft';
-}
-
-export interface CommandTurnRight {
-  type: 'TurnRight';
-}
-
-export interface CommandOpenDoor {
-  type: 'OpenDoor';
-}
-
-export interface CommandWait {
-  type: 'Wait';
-}
-
-export interface CommandAttack {
-  type: 'Attack';
-}
-
-export type Command =
-  | CommandMoveForward
-  | CommandTurnLeft
-  | CommandTurnRight
-  | CommandOpenDoor
-  | CommandWait
-  | CommandAttack;
-
-export interface WorldState {
-  tick: Tick;
-  seed: Seed;
-  player: { x: number; y: number; angle: number };
-}
-
-export interface Effect {
-  kind: 'None';
-}
-
-export function applyCommand(
-  state: WorldState,
-  _cmd: Command
-): { next: WorldState; effects: Effect[] } {
-  return { next: state, effects: [] };
-}
+/**
+ * @packageDocumentation
+ * Minimal underworld software renderer and helpers. Re-exported modules:
+ * - assets: palette, textures, materials, loaders, sprites
+ * - render: framebuffer and drawing routines
+ * - world: simple map/actors/sim utilities
+ * - adapter: glue to map domain engine effects/commands
+ */
 
 export * as Palette from './assets/palette';
 export * as Textures from './assets/textures';
 export * as Mapgen from './world/mapgen';
-export * as Actors from './world/actors';
 export * as Materials from './assets/materials';
-export * as Loaders from './assets/loaders';
 export * as Sprites from './assets/spriteProvider';
 
 export type { Framebuffer } from './render/renderer';
@@ -69,10 +24,29 @@ export {
   renderBillboards,
 } from './render/renderer';
 
-export type { SpriteProvider, SpriteImage } from './render/renderer';
+export type {
+  SpriteProvider,
+  SpriteImage,
+  SpriteInstance,
+  Camera,
+  Grid,
+  FloorCeilingGrid,
+} from './render/renderer';
 
-export type { Texture, LightLUT, MoodLUT } from './types';
+export type { Texture, LightLUT, MoodLUT, Tick, Seed } from './types';
 
 export * as Sim from './world/sim';
 
-export * as Adapter from './adapter/osric';
+export * as Adapter from './adapter';
+
+export { createRenderer } from './render/facade';
+export type {
+  RendererFacade,
+  RendererConfig,
+  Scene,
+  Materials as RendererMaterials,
+} from './render/facade';
+
+// IMPORTANT: Keep loaders exported from the main barrel.
+// Do not move these behind a subpath; it's verified this does not leak node-only deps into the browser build.
+export { NodeLoaders, BrowserLoaders } from './assets/loaders';

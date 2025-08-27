@@ -1,14 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { Actors, Mapgen, Palette, Sprites, Textures } from '@osric/renderer-underworld';
-import {
-  blitNearestUpscaled,
-  createFramebuffer,
-  renderBillboards,
-  renderFloorCeiling,
-  renderWalls,
-} from '@osric/renderer-underworld';
 import { PNG } from 'pngjs';
+import { Mapgen, Palette, Sprites, Textures, createRenderer } from '..';
+import * as Actors from '../world/actors';
 
 function toPng(width: number, height: number, data: Uint8ClampedArray): Buffer {
   const png = new PNG({ width, height });
@@ -21,7 +15,8 @@ const seed = argSeed ? Number(argSeed.split('=')[1]) : Number(process.env.SEED ?
 const outW = Number(process.env.W ?? 640);
 const outH = Number(process.env.H ?? 400);
 const map = Mapgen.generateMap(seed, 24, 24);
-const fb = createFramebuffer(320, 200, [0, 0, 0, 255]);
+const fbW = 320;
+const fbH = 200;
 const lightLUT = Palette.makeLightLUT(16);
 const base = Textures.generateBaseTextures(seed);
 const fallbackTex = base.length ? base[0].texture : Textures.generateTexture('wall_brick', seed);
@@ -53,24 +48,16 @@ const cam = {
   angle: map.playerStart.angle,
   fov: Math.PI / 3,
 };
-
-renderFloorCeiling(
-  fb,
-  { grid: fcGrid, floorTextures: floorTex, ceilingTextures: ceilTex, lightLUT, fogDensity: 0.15 },
-  cam
-);
-const { depth } = renderWalls(
-  fb,
-  {
-    grid,
-    wallTextures: wallTex,
-    getLight: (x: number, y: number) => map.cells[y * map.width + x].light,
-    lightLUT,
-    fogDensity: 0.15,
-    isDoorClosed: (x: number, y: number) => map.cells[y * map.width + x].door,
-  },
-  cam
-);
+const renderer = createRenderer({
+  fbWidth: fbW,
+  fbHeight: fbH,
+  camera: cam,
+  grids: { walls: grid, floorCeiling: fcGrid },
+  materials: { walls: wallTex, floors: floorTex, ceilings: ceilTex },
+  lightLUT,
+  fogDensity: 0.15,
+  isDoorClosed: (x: number, y: number) => map.cells[y * map.width + x].door,
+});
 
 const images = Actors.generateActorSet();
 const provider = Sprites.createSpriteProvider(
@@ -79,19 +66,16 @@ const provider = Sprites.createSpriteProvider(
 );
 if (map.actors.length) {
   const s = map.actors[0];
-  renderBillboards(
-    fb,
-    depth,
-    cam,
-    [{ x: s.x, y: s.y, kind: s.kind as Actors.ActorKind, variant: 'main' }],
-    provider,
-    0
-  );
+  renderer.render({
+    sprites: [{ x: s.x, y: s.y, kind: s.kind as Actors.ActorKind, variant: 'main' }],
+    atlas: provider,
+    tick: 0,
+  });
 }
 
-const outTex = blitNearestUpscaled(fb, outW, outH);
+const outTex = renderer.renderToTexture(outW, outH);
 const buf = toPng(outTex.width, outTex.height, outTex.data);
-const outDir = path.resolve(process.cwd(), 'renderer-underworld');
+const outDir = path.resolve(process.cwd(), 'output');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
 const outPath = path.join(outDir, 'out.png');
 fs.writeFileSync(outPath, buf);

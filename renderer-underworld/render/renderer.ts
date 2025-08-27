@@ -1,11 +1,13 @@
-import type { Texture } from '@osric/renderer-underworld';
+import type { Texture } from '../types';
 
+/** Pixel buffer for on-CPU rendering (RGBA8). */
 export type Framebuffer = {
   width: number;
   height: number;
   data: Uint8ClampedArray;
 };
 
+/** Create a framebuffer and clear it to the given color. */
 export function createFramebuffer(
   width: number,
   height: number,
@@ -17,6 +19,7 @@ export function createFramebuffer(
   return fb;
 }
 
+/** Fill the framebuffer with a solid RGBA color. */
 export function clear(fb: Framebuffer, color: [number, number, number, number]) {
   const [r, g, b, a] = color;
   for (let i = 0; i < fb.data.length; i += 4) {
@@ -27,13 +30,19 @@ export function clear(fb: Framebuffer, color: [number, number, number, number]) 
   }
 }
 
+/**
+ * Blit the framebuffer to a new Texture using nearest-neighbor scaling while
+ * preserving aspect ratio (letterboxed on a solid background when needed).
+ */
 export function blitNearestUpscaled(
   fb: Framebuffer,
   outW: number,
   outH: number,
   bg: [number, number, number, number] = [0, 0, 0, 255]
 ): Texture {
-  const aspect = fb.width / fb.height;
+  const inW = fb.width;
+  const inH = fb.height;
+  const aspect = inW / inH;
   let drawW = outW;
   let drawH = Math.floor(outW / aspect);
   if (drawH > outH) {
@@ -43,17 +52,41 @@ export function blitNearestUpscaled(
   const offsetX = Math.floor((outW - drawW) / 2);
   const offsetY = Math.floor((outH - drawH) / 2);
   const out: Texture = { width: outW, height: outH, data: new Uint8ClampedArray(outW * outH * 4) };
-  for (let i = 0; i < out.data.length; i += 4) {
-    out.data[i] = bg[0];
-    out.data[i + 1] = bg[1];
-    out.data[i + 2] = bg[2];
-    out.data[i + 3] = bg[3];
+
+  const fillBg = (x0: number, y0: number, x1: number, y1: number) => {
+    // Fill rectangle [x0,x1) x [y0,y1) with bg color
+    const [r, g, b, a] = bg;
+    for (let y = y0; y < y1; y++) {
+      let di = (y * outW + x0) * 4;
+      for (let x = x0; x < x1; x++) {
+        out.data[di] = r;
+        out.data[di + 1] = g;
+        out.data[di + 2] = b;
+        out.data[di + 3] = a;
+        di += 4;
+      }
+    }
+  };
+
+  // Only fill letterbox regions instead of the whole buffer.
+  if (offsetY > 0) {
+    // Top band
+    fillBg(0, 0, outW, offsetY);
+    // Bottom band
+    fillBg(0, offsetY + drawH, outW, outH);
   }
+  if (offsetX > 0) {
+    // Left and right side bands within the drawn area rows
+    fillBg(0, offsetY, offsetX, offsetY + drawH);
+    fillBg(offsetX + drawW, offsetY, outW, offsetY + drawH);
+  }
+
+  // Blit scaled image into center region
   for (let y = 0; y < drawH; y++) {
-    const srcY = Math.floor((y / drawH) * fb.height);
+    const srcY = Math.floor((y / drawH) * inH);
     for (let x = 0; x < drawW; x++) {
-      const srcX = Math.floor((x / drawW) * fb.width);
-      const si = (srcY * fb.width + srcX) * 4;
+      const srcX = Math.floor((x / drawW) * inW);
+      const si = (srcY * inW + srcX) * 4;
       const di = ((y + offsetY) * outW + (x + offsetX)) * 4;
       out.data[di] = fb.data[si];
       out.data[di + 1] = fb.data[si + 1];
@@ -64,32 +97,39 @@ export function blitNearestUpscaled(
   return out;
 }
 
+/** Grid of 1-based wall texture ids (0 for empty). */
 export type Grid = { width: number; height: number; get(x: number, y: number): number };
 
+/** Simple pinhole camera: world position, angle (radians), and field of view (radians). */
 export type Camera = { x: number; y: number; angle: number; fov: number };
 
 export type RaycastParams = {
   grid: Grid;
   wallTextures: Texture[];
   getLight?: (x: number, y: number) => number;
-  lightLUT?: number[];
+  lightLUT?: ReadonlyArray<number>;
   fogDensity?: number;
   isDoorClosed?: (x: number, y: number) => boolean;
   doorTexture?: Texture;
 };
 
+/** Ray-cast and render vertical wall slices; returns per-column depth buffer. */
 export function renderWalls(
   fb: Framebuffer,
   params: RaycastParams,
   cam: Camera
 ): { depth: Float32Array } {
-  const depth = new Float32Array(fb.width);
+  const width = fb.width;
+  const height = fb.height;
+  const depth = new Float32Array(width);
   const dirX = Math.cos(cam.angle);
   const dirY = Math.sin(cam.angle);
-  const planeX = -Math.sin(cam.angle) * Math.tan(cam.fov / 2);
-  const planeY = Math.cos(cam.angle) * Math.tan(cam.fov / 2);
-  for (let x = 0; x < fb.width; x++) {
-    const cameraX = (2 * x) / fb.width - 1;
+  const halfTan = Math.tan(cam.fov / 2);
+  const planeX = -Math.sin(cam.angle) * halfTan;
+  const planeY = Math.cos(cam.angle) * halfTan;
+  const scaleX = 2 / width;
+  for (let x = 0; x < width; x++) {
+    const cameraX = scaleX * x - 1;
     const rayDirX = dirX + planeX * cameraX;
     const rayDirY = dirY + planeY * cameraX;
     let mapX = Math.floor(cam.x);
@@ -145,11 +185,11 @@ export function renderWalls(
     }
     const perpWallDist = side === 0 ? sideDistX - deltaDistX : sideDistY - deltaDistY;
     depth[x] = perpWallDist;
-    const lineHeight = Math.floor(fb.height / Math.max(1e-6, perpWallDist));
-    let drawStart = -lineHeight / 2 + fb.height / 2;
+    const lineHeight = Math.floor(height / Math.max(1e-6, perpWallDist));
+    let drawStart = -lineHeight / 2 + height / 2;
     if (drawStart < 0) drawStart = 0;
-    let drawEnd = lineHeight / 2 + fb.height / 2;
-    if (drawEnd >= fb.height) drawEnd = fb.height - 1;
+    let drawEnd = lineHeight / 2 + height / 2;
+    if (drawEnd >= height) drawEnd = height - 1;
     let wallX: number;
     if (side === 0) wallX = cam.y + perpWallDist * rayDirY;
     else wallX = cam.x + perpWallDist * rayDirX;
@@ -168,10 +208,10 @@ export function renderWalls(
       params.fogDensity && params.fogDensity > 0 ? 1 / (1 + params.fogDensity * perpWallDist) : 1;
     const shade = Math.max(0, Math.min(1, lightMul * fogMul));
     for (let y = drawStart | 0; y <= (drawEnd | 0); y++) {
-      const d = y * 256 - fb.height * 128 + lineHeight * 128;
+      const d = y * 256 - height * 128 + lineHeight * 128;
       const texY = Math.floor((d * tex.height) / lineHeight / 256);
       const si = (texY * tex.width + texX) * 4;
-      const di = (y * fb.width + x) * 4;
+      const di = (y * width + x) * 4;
       fb.data[di] = (tex.data[si] * shade) | 0;
       fb.data[di + 1] = (tex.data[si + 1] * shade) | 0;
       fb.data[di + 2] = (tex.data[si + 2] * shade) | 0;
@@ -181,6 +221,7 @@ export function renderWalls(
   return { depth };
 }
 
+/** @internal */
 export type FloorCeilingCell = { floor: number; ceiling: number; light: number };
 
 export type FloorCeilingGrid = {
@@ -193,30 +234,34 @@ export type FloorCeilingParams = {
   grid: FloorCeilingGrid;
   floorTextures: Texture[];
   ceilingTextures: Texture[];
-  lightLUT?: number[];
+  lightLUT?: ReadonlyArray<number>;
   fogDensity?: number;
 };
 
+/** Render floor and ceiling textures using screen-space stepping. */
 export function renderFloorCeiling(fb: Framebuffer, params: FloorCeilingParams, cam: Camera): void {
+  const width = fb.width;
+  const height = fb.height;
   const dirX = Math.cos(cam.angle);
   const dirY = Math.sin(cam.angle);
-  const planeX = -Math.sin(cam.angle) * Math.tan(cam.fov / 2);
-  const planeY = Math.cos(cam.angle) * Math.tan(cam.fov / 2);
+  const halfTan = Math.tan(cam.fov / 2);
+  const planeX = -Math.sin(cam.angle) * halfTan;
+  const planeY = Math.cos(cam.angle) * halfTan;
   const rayDir0X = dirX - planeX;
   const rayDir0Y = dirY - planeY;
   const rayDir1X = dirX + planeX;
   const rayDir1Y = dirY + planeY;
-  const halfH = fb.height / 2;
+  const halfH = height / 2;
   const posZ = halfH;
-  for (let y = 0; y < fb.height; y++) {
+  for (let y = 0; y < height; y++) {
     const p = y - halfH;
     if (p === 0) continue;
     const rowDist = Math.abs(posZ / p);
-    const stepX = (rowDist * (rayDir1X - rayDir0X)) / fb.width;
-    const stepY = (rowDist * (rayDir1Y - rayDir0Y)) / fb.width;
+    const stepX = (rowDist * (rayDir1X - rayDir0X)) / width;
+    const stepY = (rowDist * (rayDir1Y - rayDir0Y)) / width;
     let floorX = cam.x + rowDist * rayDir0X;
     let floorY = cam.y + rowDist * rayDir0Y;
-    for (let x = 0; x < fb.width; x++) {
+    for (let x = 0; x < width; x++) {
       const cellX = Math.floor(floorX);
       const cellY = Math.floor(floorY);
       if (cellX >= 0 && cellY >= 0 && cellX < params.grid.width && cellY < params.grid.height) {
@@ -241,10 +286,10 @@ export function renderFloorCeiling(fb: Framebuffer, params: FloorCeilingParams, 
           fb.data[di + 3] = 255;
         };
         if (p > 0) {
-          const di = (y * fb.width + x) * 4;
+          const di = (y * width + x) * 4;
           applyShadedSample(params.floorTextures, cell.floor, di);
         } else {
-          const di = (y * fb.width + x) * 4;
+          const di = (y * width + x) * 4;
           applyShadedSample(params.ceilingTextures, cell.ceiling, di);
         }
       }
@@ -254,6 +299,7 @@ export function renderFloorCeiling(fb: Framebuffer, params: FloorCeilingParams, 
   }
 }
 
+/** Sprite atlas image + pivot Y (bottom of sprite for placement). */
 export type SpriteImage = { texture: Texture; pivotY: number };
 
 export type SpriteInstance = {
@@ -263,8 +309,10 @@ export type SpriteInstance = {
   kind: string;
 };
 
+/** Lookup a sprite by kind + variant from an atlas. */
 export type SpriteProvider = { get(kind: string, variant: string): SpriteImage | undefined };
 
+/** Render sprites facing the camera with simple depth test and alpha discard. */
 export function renderBillboards(
   fb: Framebuffer,
   depth: Float32Array,

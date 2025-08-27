@@ -9,16 +9,23 @@
     ".": {
       "import": "./index.ts",
       "types": "./index.ts"
+    },
+    "./assets/loaders": {
+      "browser": "./assets/loaders.browser.ts",
+      "import": "./assets/loaders.node.ts",
+      "types": "./assets/loaders.ts"
     }
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "dev": "tsx ./dev.ts --seed=123",
+    "dev": "tsx ./tools/dev.ts --seed=123",
+    "verify:facade": "tsx ./tools/verify-facade.ts",
+    "bench": "tsx ./tools/bench.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@osric/engine-core": "workspace:*",
+    "@osric/engine": "workspace:*",
     "pngjs": "^7.0.0",
     "tsx": "^4.19.0"
   },
